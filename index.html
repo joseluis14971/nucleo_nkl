@@ -1,0 +1,104 @@
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Núcleo NKL | Minado CPU Descentralizado</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { margin:0; padding:0; background:#0a0a0a; color:#e0e0e0; font-family:'Inter',sans-serif; }
+        .container { max-width:1200px; margin:0 auto; padding:0 20px; }
+        header { background:linear-gradient(90deg,#00ff9d,#00b36b); color:#000; padding:1rem 0; position:sticky; top:0; z-index:100; }
+        .logo { font-size:28px; font-weight:700; letter-spacing:-1px; }
+        .hero { padding:140px 0 100px; text-align:center; background:linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1639762681485-074b5c5d5d5e') center/cover; }
+        h1 { font-size:4.5rem; margin:0 0 20px; line-height:1.05; }
+        .tagline { font-size:1.65rem; margin-bottom:40px; opacity:0.95; }
+        .btn { background:#00ff9d; color:#000; padding:18px 50px; font-size:1.3rem; font-weight:600; border-radius:50px; text-decoration:none; display:inline-block; margin:10px; }
+        .section { padding:90px 0; }
+        .card-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(320px,1fr)); gap:25px; }
+        .card { background:#111; border-radius:16px; padding:35px; text-align:center; }
+        .tokenomics { background:#111; border-radius:16px; padding:50px; }
+        footer { background:#111; padding:60px 0; text-align:center; font-size:0.95rem; opacity:0.8; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <nav style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="logo">NÚCLEO NKL</div>
+                <div>Minado CPU • Anti-ASIC • Descentralizado</div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>De vuelta al origen</h1>
+            <p class="tagline">Una criptomoneda diseñada para que cualquier persona pueda minar con su PC personal.<br>Protección real contra ASICs. Descentralización real.</p>
+            <a href="#descarga" class="btn">Descargar Miner</a>
+            <a href="http://127.0.0.1:5000/dashboard" target="_blank" class="btn" style="background:#222;color:#fff;">Ver Pool en Vivo</a>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 style="text-align:center;margin-bottom:50px;">¿Por qué Núcleo NKL?</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Minado accesible</h3>
+                    <p>Algoritmo NKL-Argon diseñado para que las computadoras personales sean competitivas.</p>
+                </div>
+                <div class="card">
+                    <h3>Protección contra ASICs</h3>
+                    <p>Las granjas industriales no pueden dominar la red. El poder vuelve a la gente.</p>
+                </div>
+                <div class="card">
+                    <h3>Emisión justa y transparente</h3>
+                    <p>30 años • Halving cada 3 años (reducción 30%) • 30% reserva fundador pública.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section tokenomics">
+        <div class="container">
+            <h2 style="text-align:center;margin-bottom:40px;">Tokenomics</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:30px;text-align:center;">
+                <div><strong>Emisión total</strong><br><span style="font-size:2.2rem;color:#00ff9d;">100.000.000.000 NKL</span></div>
+                <div><strong>Reserva fundador</strong><br><span style="font-size:2.2rem;color:#00ff9d;">30.000.000.000 NKL (30%)</span></div>
+                <div><strong>Para mineros</strong><br><span style="font-size:2.2rem;color:#00ff9d;">70.000.000.000 NKL (70%)</span></div>
+                <div><strong>Duración</strong><br><span style="font-size:2.2rem;color:#00ff9d;">30 años</span></div>
+            </div>
+            <p style="text-align:center;margin-top:40px;">
+                Cadena de bloques propia • Bloque cada 9 minutos • Proyecto argentino
+            </p>
+        </div>
+    </section>
+
+    <section id="descarga" class="section">
+        <div class="container" style="text-align:center;">
+            <h2>Descarga el Miner Oficial</h2>
+            <p style="max-width:600px;margin:25px auto 40px;">
+                Versión actual para Windows. Fácil de usar y compatible con múltiples PCs.
+            </p>
+            <a href="#" onclick="alert('En modo prueba - el ZIP se generará cuando esté listo. Por ahora usa el miner.py que ya tienes.')" 
+               style="background:#00ff9d;color:#000;padding:22px 70px;font-size:1.5rem;border-radius:50px;text-decoration:none;display:inline-block;">
+                ⬇️ Descargar NKL_Miner_v3.1.zip
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            Núcleo NKL © 2026 • Proyecto argentino de minado descentralizado con CPU<br>
+            30 años de emisión • Halving cada 3 años • Protección real contra ASICs
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
