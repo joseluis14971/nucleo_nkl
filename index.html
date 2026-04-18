@@ -15,14 +15,14 @@
         .btn-primary, .btn-secondary, .btn-download { padding:14px 32px; margin:10px; border-radius:8px; text-decoration:none; font-weight:600; font-size:1.1rem; display:inline-block; }
         .btn-primary { background:#00ff9d; color:#000; }
         .btn-secondary { background:transparent; border:2px solid #00ff9d; color:#00ff9d; }
-        .btn-download { 
-            background:#00ff9d; 
-            color:#000; 
-            font-size:1.3rem; 
-            padding:18px 40px; 
-            margin:40px auto; 
-            display:block; 
-            max-width:420px; 
+        .btn-download {
+            background:#00ff9d;
+            color:#000;
+            font-size:1.3rem;
+            padding:18px 40px;
+            margin:40px auto;
+            display:block;
+            max-width:420px;
             text-align:center;
         }
         .section { padding:80px 20px; max-width:1100px; margin:auto; }
@@ -40,17 +40,18 @@
     </style>
 </head>
 <body>
+
     <!-- HERO -->
     <section class="hero">
         <h1>Núcleo NKL</h1>
         <p class="tagline">De vuelta al origen del minado descentralizado</p>
         <p class="description">
-            Una criptomoneda diseñada para que cualquier persona pueda participar con su computadora personal,
+            Una criptomoneda con <strong>cadena de bloques propia</strong> diseñada para que cualquier persona pueda participar con su computadora personal,
             protegiendo la verdadera descentralización frente a la dominación de grandes granjas ASIC.
         </p>
         <div class="buttons">
             <a href="#descarga" class="btn-primary">Descargar Minero</a>
-            <a href="http://173.212.228.11/pool" target="_blank" class="btn-secundario">Ver Pool en Vivo</a>
+            <a href="http://173.212.228.11/pool" target="_blank" class="btn-secondary">Ver Pool en Vivo</a>
         </div>
     </section>
 
@@ -60,17 +61,43 @@
         <div class="cards">
             <div class="card">
                 <h3>Idea de mineros reales</h3>
-                <p>Surgió de un grupo de mineros preocupados por la creciente centralización del minado en criptomonedas. Queremos devolver el poder a los usuarios comunes y no solo a grandes operaciones industriales.</p>
+                <p>Surgió de un grupo de mineros preocupados por la creciente centralización del minado. Queremos devolver el poder a los usuarios comunes.</p>
             </div>
             <div class="card">
                 <h3>Desarrollado con tecnología actual</h3>
-                <p>Creado por un equipo de programadores utilizando las mejores herramientas de inteligencia artificial disponibles hoy, combinando experiencia real en minería con código moderno y seguro.</p>
+                <p>Creado utilizando las mejores herramientas de inteligencia artificial combinadas con experiencia real en minería.</p>
             </div>
             <div class="card">
                 <h3>Apoyo del ecosistema local</h3>
-                <p>Contamos con el respaldo de un grupo de empresarios PyMEs que creen en proyectos tecnológicos argentinos que promueven la descentralización y la inclusión.</p>
+                <p>Respaldado por un grupo de empresarios PyMEs que creen en proyectos tecnológicos argentinos.</p>
             </div>
         </div>
+    </section>
+
+    <!-- NUESTRO ALGORITMO -->
+    <section class="section" style="background:#111;">
+        <h2>Nuestro Algoritmo</h2>
+        <div class="cards">
+            <div class="card">
+                <h3>Cadena de Bloques Propia</h3>
+                <p>Núcleo NKL no es un token sobre otra red. Posee su propia blockchain independiente con reglas de consenso propias.</p>
+            </div>
+            <div class="card">
+                <h3>NKL-Argon (Memory-Hard)</h3>
+                <p>Algoritmo propio basado en Argon2 + SHA-256:<br>
+                • 256 KB de memoria por hash<br>
+                • 4 iteraciones intensivas<br>
+                • Mezcla XOR y accesos pseudo-aleatorios<br>
+                • Extremadamente resistente a ASICs y GPUs</p>
+            </div>
+            <div class="card">
+                <h3>Descentralización Real</h3>
+                <p>Diseñado para que el minado sea competitivo con CPU común. Evita la dominación de granjas industriales desde el primer día.</p>
+            </div>
+        </div>
+        <p style="text-align:center; margin-top:40px; opacity:0.85;">
+            Dificultad dinámica ajustada cada 100 bloques para mantener exactamente 9 minutos por bloque.
+        </p>
     </section>
 
     <!-- TOKENOMICS -->
@@ -79,10 +106,10 @@
         <p class="tokenomics-main">Emisión total: 100.000.000.000 NKL</p>
         <p class="tokenomics-main">Minado en 30 años</p>
         <p class="tokenomics-main">Halving cada 3 años con reducción del 30%</p>
-       
+      
         <p class="tokenomics-note">
-            Tokenomics transparentes. El 0,50% de cada transacción se destina al desarrollo del proyecto.
-            El 30% restante corresponde a la reserva del equipo fundador para desarrollo y sostenibilidad a largo plazo.
+            El 0,50% de cada transacción se destina al desarrollo del proyecto.<br>
+            El 30% corresponde a la reserva del equipo fundador para desarrollo y sostenibilidad a largo plazo.
         </p>
     </section>
 
@@ -94,13 +121,13 @@
         </p>
         <p style="margin:15px 0;">
             • NKL-Argon (variante personalizada de Argon2)<br>
-            • Alto consumo de memoria (64 KB por hash)<br>
-            • Iteraciones controladas y mezcla intensiva de bloques<br>
-            • Validación PoW con nkl_hash que combina SHA-256 con bucles de memoria XOR<br>
+            • Alto consumo de memoria (256 KB por hash)<br>
+            • 4 iteraciones con mezcla intensiva<br>
+            • Validación PoW que combina SHA-256 con bucles de memoria XOR<br>
             • Dificultad dinámica ajustada cada 100 bloques
         </p>
         <p>
-            Estas características hacen que los ASICs sean ineficientes o directamente incompatibles, permitiendo que el minado siga siendo accesible para CPUs comunes y protegiendo la descentralización del proyecto.
+            Estas características hacen que los ASICs sean ineficientes o incompatibles, permitiendo que el minado siga siendo accesible para CPUs comunes.
         </p>
     </section>
 
@@ -110,19 +137,16 @@
         <div style="max-width:800px; margin:0 auto; text-align:left;">
             <ol style="font-size:1.05rem; line-height:1.8;">
                 <li><strong>Descarga el Minero</strong><br>Haz clic en el botón “Descargar Minero” y guarda el archivo en tu computadora.</li>
-                <li><strong>Ejecuta el archivo por primera vez</strong><br>Al abrirlo, el programa te pedirá que elijas un <strong>nombre de usuario</strong> simple (ejemplo: Carlos, Maria, Jose, etc.).</li>
-                <li><strong>Tu Wallet NKL se crea automáticamente</strong><br>El sistema te asignará <strong>por única vez</strong> una dirección de wallet NKL única y permanente asociada a ese nombre de usuario.</li>
-                <li><strong>Conecta todas tus máquinas</strong><br>Con el mismo nombre de usuario podrás minar desde tu notebook, PC de oficina, otra computadora, etc. Todas las máquinas minarán a la misma wallet.</li>
-                <li><strong>¿Dónde queda guardada tu wallet?</strong><br>Se guarda automáticamente en un archivo llamado <strong>mi_wallet_nkl.json</strong> en la misma carpeta donde ejecutaste el minero. <strong>Guárdalo en un lugar seguro</strong>. Si lo pierdes, no podrás recuperar la wallet.</li>
+                <li><strong>Ejecuta el archivo por primera vez</strong><br>Al abrirlo, el programa te pedirá que elijas un <strong>nombre de usuario</strong> simple.</li>
+                <li><strong>Tu Wallet NKL se crea automáticamente</strong><br>El sistema te asignará por única vez una dirección de wallet NKL única y permanente.</li>
+                <li><strong>Conecta todas tus máquinas</strong><br>Con el mismo nombre de usuario podrás minar desde múltiples computadoras a la misma wallet.</li>
+                <li><strong>¿Dónde queda guardada tu wallet?</strong><br>Se guarda automáticamente en <strong>mi_wallet_nkl.json</strong>. Guárdalo en un lugar seguro.</li>
             </ol>
 
-            <!-- BOTÓN CENTRADO AQUÍ -->
-           <a href="https://raw.githubusercontent.com/joseluis14971/nucleo_nkl/main/NKL_Miner.zip" 
-   class="btn-download" 
-   download="NKL_Miner.zip">
-   DESCARGA TU MINERO AQUÍ
-</a>
-</a>
+            <a href="https://raw.githubusercontent.com/joseluis14971/nucleo_nkl/main/NKL_Miner.zip"
+               class="btn-download" download="NKL_Miner.zip">
+               DESCARGA TU MINERO AQUÍ
+            </a>
         </div>
     </section>
 
@@ -131,7 +155,7 @@
         <h2>Próximos Intercambios</h2>
         <p style="font-size:1.15rem;">Estamos trabajando activamente para listar NKL en exchanges confiables.<br>
         <strong>Próximamente disponible en:</strong> MEXC • Gate.io • KuCoin • TradeOgre</p>
-        
+       
         <h2 style="margin-top:60px;">Únete a la minería temprana</h2>
         <p style="font-size:1.15rem; max-width:750px; margin:0 auto;">
             Este es el momento ideal para comenzar a minar NKL.<br><br>
@@ -146,7 +170,7 @@
     </section>
 
     <footer>
-        © 2026 Núcleo NKL — Proyecto enfocado en la descentralización real del minado CPU
+        © 2026 Núcleo NKL — Cadena de bloques propia con algoritmo NKL-Argon • Minado CPU Descentralizado
     </footer>
 </body>
 </html>
