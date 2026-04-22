@@ -69,7 +69,7 @@
         ol { padding-left:25px; }
         li { margin-bottom:20px; }
 
-        /* === SECCIÓN REDES SOCIALES === */
+        /* SECCIÓN REDES SOCIALES - SOLO ESTO SE AGREGÓ */
         .social-section {
             background:#111;
             padding:60px 20px;
@@ -102,14 +102,6 @@
         .social-btn:hover {
             background:#00ff9d;
             color:#000;
-            transform:scale(1.05);
-        }
-
-        footer { 
-            text-align:center; 
-            padding:40px; 
-            opacity:0.6; 
-            font-size:0.9rem; 
         }
     </style>
 </head>
@@ -127,22 +119,83 @@
         </div>
     </section>
 
-    <!-- (Mantengo todas tus secciones iguales hasta aquí) -->
-
-    <!-- === SECCIÓN REDES SOCIALES (NUEVA) === -->
-    <section class="social-section">
-        <h2>Seguinos en nuestras redes</h2>
-        <div class="social-links">
-            <a href="https://x.com/NucleoNKL" target="_blank" class="social-btn">𝕏 Twitter</a>
-            <a href="https://facebook.com/nucleonkl" target="_blank" class="social-btn">Facebook</a>
-            <a href="https://instagram.com/nucleonkl" target="_blank" class="social-btn">Instagram</a>
-            <a href="https://tiktok.com/@nucleonkl" target="_blank" class="social-btn">TikTok</a>
-            <a href="https://t.me/nucleonkl" target="_blank" class="social-btn">Telegram</a>
-            <a href="https://discord.gg/nucleonkl" target="_blank" class="social-btn">Discord</a>
+    <!-- POR QUÉ NKL -->
+    <section id="why" class="section">
+        <h2>Por qué nace Núcleo NKL</h2>
+        <div class="cards">
+            <div class="card">
+                <h3>Idea de mineros reales</h3>
+                <p>Surgió de un grupo de mineros preocupados por la creciente centralización del minado. Queremos devolver el poder a los usuarios comunes.</p>
+            </div>
+            <div class="card">
+                <h3>Desarrollado con tecnología actual</h3>
+                <p>Creado utilizando las mejores herramientas de inteligencia artificial combinadas con experiencia real en minería.</p>
+            </div>
+            <div class="card">
+                <h3>Apoyo del ecosistema local</h3>
+                <p>Respaldado por un grupo de empresarios PyMEs que creen en proyectos tecnológicos argentinos.</p>
+            </div>
         </div>
     </section>
 
-    <!-- CÓMO EMPEZAR A MINAR (sección que ya tenías) -->
+    <!-- NUESTRO ALGORITMO -->
+    <section class="section" style="background:#111;">
+        <h2>Nuestro Algoritmo</h2>
+        <div class="cards">
+            <div class="card">
+                <h3>Cadena de Bloques Propia</h3>
+                <p>Núcleo NKL posee su propia blockchain independiente, con reglas de consenso y validación propias. No depende de ninguna otra red.</p>
+            </div>
+            <div class="card">
+                <h3>NKL-Argon (Memory-Hard)</h3>
+                <p>Algoritmo propio basado en Argon2 + SHA-256:<br>
+                • 256 KB de memoria por hash<br>
+                • 4 iteraciones intensivas<br>
+                • Mezcla XOR y accesos pseudo-aleatorios<br>
+                • Extremadamente resistente a ASICs y GPUs</p>
+            </div>
+            <div class="card">
+                <h3>Descentralización Real</h3>
+                <p>Diseñado para que el minado sea competitivo con CPU común. Evita la dominación de granjas industriales desde el primer día.</p>
+            </div>
+        </div>
+        <p style="text-align:center; margin-top:40px; opacity:0.85;">
+            Dificultad dinámica ajustada cada 100 bloques para mantener exactamente 9 minutos por bloque.
+        </p>
+    </section>
+
+    <!-- TOKENOMICS -->
+    <section class="tokenomics">
+        <h2>Tokenomics</h2>
+        <p class="tokenomics-main">Emisión total: 100.000.000.000 NKL</p>
+        <p class="tokenomics-main">Minado en 30 años</p>
+        <p class="tokenomics-main">Halving cada 3 años con reducción del 30%</p>
+    
+        <p class="tokenomics-note">
+            El 0,50% de cada transacción se destina al desarrollo del proyecto.<br>
+            El 30% corresponde a la reserva del equipo fundador para desarrollo y sostenibilidad a largo plazo.
+        </p>
+    </section>
+
+    <!-- MEDIDAS DE SEGURIDAD -->
+    <section class="security">
+        <h2 style="color:#00ff9d; margin-bottom:20px;">Medidas de Seguridad Técnicas contra ASICs</h2>
+        <p>
+            Núcleo NKL utiliza un algoritmo de prueba de trabajo memory-hard diseñado específicamente para resistir hardware especializado:
+        </p>
+        <p style="margin:15px 0;">
+            • NKL-Argon (variante personalizada de Argon2)<br>
+            • Alto consumo de memoria (256 KB por hash)<br>
+            • 4 iteraciones con mezcla intensiva<br>
+            • Validación PoW que combina SHA-256 con bucles de memoria XOR<br>
+            • Dificultad dinámica ajustada cada 100 bloques
+        </p>
+        <p>
+            Estas características hacen que los ASICs sean ineficientes o incompatibles, permitiendo que el minado siga siendo accesible para CPUs comunes.
+        </p>
+    </section>
+
+    <!-- CÓMO EMPEZAR A MINAR -->
     <section id="descarga" class="section" style="background:#111;">
         <h2>Cómo empezar a minar NKL</h2>
         <div style="max-width:800px; margin:0 auto; text-align:left;">
@@ -150,20 +203,4 @@
                 <li><strong>Descarga el Minero</strong><br>Haz clic en el botón “Descargar Minero” y guarda el archivo en tu computadora.</li>
                 <li><strong>Ejecuta el archivo por primera vez</strong><br>Al abrirlo, el programa te pedirá que elijas un <strong>nombre de usuario</strong> simple.</li>
                 <li><strong>Tu Wallet NKL se crea automáticamente</strong><br>El sistema te asignará por única vez una dirección de wallet NKL única y permanente.</li>
-                <li><strong>Conecta todas tus máquinas</strong><br>Con el mismo nombre de usuario podrás minar desde múltiples computadoras a la misma wallet.</li>
-                <li><strong>¿Dónde queda guardada tu wallet?</strong><br>Se guarda automáticamente en <strong>mi_wallet_nkl.json</strong>. Guárdalo en un lugar seguro.</li>
-            </ol>
-            <a href="https://raw.githubusercontent.com/joseluis14971/nucleo_nkl/main/NKL_Miner.zip"
-               class="btn-download" download="NKL_Miner.zip">
-               DESCARGA TU MINERO AQUÍ
-            </a>
-        </div>
-    </section>
-
-    <!-- Resto de tus secciones se mantienen iguales -->
-
-    <footer>
-        © 2026 Núcleo NKL — Cadena de bloques propia con algoritmo NKL-Argon • Minado CPU Descentralizado
-    </footer>
-</body>
-</html>
+                <li><strong>Conecta todas
