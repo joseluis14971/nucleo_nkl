@@ -147,6 +147,75 @@ code.inline{color:var(--teal);background:#1a2e45;padding:2px 7px;border-radius:4
 .social-btn:hover{background:var(--teal);color:#000;border-color:var(--teal);}
 .social-btn svg{width:18px;height:18px;flex-shrink:0;}
 
+
+/* WHITEPAPERS */
+.whitepapers-box{
+  margin-top:42px;
+  background:linear-gradient(135deg,var(--bg-card),var(--bg-card2));
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:30px;
+  max-width:900px;
+}
+.whitepapers-title{
+  font-size:1.35rem;
+  font-weight:800;
+  color:#fff;
+  margin-bottom:8px;
+}
+.whitepapers-line{
+  height:1px;
+  background:linear-gradient(90deg,var(--teal),transparent);
+  margin:0 0 22px;
+}
+.whitepaper-item{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:16px;
+  align-items:center;
+  padding:16px 0;
+  border-bottom:1px solid var(--border);
+}
+.whitepaper-item:last-child{border-bottom:none;}
+.whitepaper-name{
+  color:var(--text);
+  font-weight:700;
+  font-size:.96rem;
+}
+.whitepaper-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.wp-btn{
+  display:inline-block;
+  border:1px solid var(--teal);
+  color:var(--teal);
+  padding:8px 14px;
+  border-radius:8px;
+  font-size:.82rem;
+  font-weight:700;
+  transition:.2s;
+}
+.wp-btn:hover{
+  background:var(--teal);
+  color:#000;
+}
+.wp-btn.download{
+  background:var(--teal);
+  color:#000;
+}
+.wp-btn.download:hover{
+  background:var(--teal-dark);
+  border-color:var(--teal-dark);
+}
+@media(max-width:640px){
+  .whitepapers-box{padding:22px 18px;}
+  .whitepaper-item{grid-template-columns:1fr;}
+  .whitepaper-actions{justify-content:flex-start;}
+}
+
 /* FOOTER */
 footer{background:var(--bg-card);border-top:1px solid var(--border);padding:30px 5%;text-align:center;}
 footer p{font-size:.83rem;color:var(--muted);}
@@ -431,6 +500,37 @@ footer .sep{margin:0 8px;}
         TikTok
       </a>
     </div>
+
+    <!-- WHITEPAPERS OFICIALES -->
+    <div class="whitepapers-box">
+      <div class="whitepapers-title">📘 Whitepapers Oficiales</div>
+      <div class="whitepapers-line"></div>
+
+      <div class="whitepaper-item">
+        <div class="whitepaper-name">Whitepaper I — Staking y NúcleoPoP</div>
+        <div class="whitepaper-actions">
+          <a href="NKL_Doc1_Staking_NucleoPoP(1)_Word2016(2)(4).html" target="_blank" class="wp-btn">Leer Online</a>
+          <a href="NKL_Doc1_Staking_NucleoPoP(1)_Word2016(2)(4).pdf" download class="wp-btn download">Descargar PDF</a>
+        </div>
+      </div>
+
+      <div class="whitepaper-item">
+        <div class="whitepaper-name">Whitepaper II — Tokenomics y Algoritmo NKL-Argon</div>
+        <div class="whitepaper-actions">
+          <a href="NKL_Doc2_Tokenomics_Algoritmo(1)_Word2016(2)(4).html" target="_blank" class="wp-btn">Leer Online</a>
+          <a href="NKL_Doc2_Tokenomics_Algoritmo(1)_Word2016(2)(4).pdf" download class="wp-btn download">Descargar PDF</a>
+        </div>
+      </div>
+
+      <div class="whitepaper-item">
+        <div class="whitepaper-name">Whitepaper III — Visión del Proyecto y Guía del Minero</div>
+        <div class="whitepaper-actions">
+          <a href="NKL_Doc3_Vision_Comunidad_Minero(1)_Word2016(2)(4).html" target="_blank" class="wp-btn">Leer Online</a>
+          <a href="NKL_Doc3_Vision_Comunidad_Minero(1)_Word2016(2)(4).pdf" download class="wp-btn download">Descargar PDF</a>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
