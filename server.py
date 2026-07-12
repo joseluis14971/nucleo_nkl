@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime, timezone
+import hashlib
 """
 Nucleo NKL - Pool Server v3.1
 Correcciones v2.2:
@@ -796,11 +798,19 @@ def submit_share():
             _pplns_distribute(db, block_index, reward_fr)
             new_diff_fr    = recalculate_difficulty(db, block_index)
             next_reward_fr = get_block_reward(block_index + 1)
+            # Hash real del bloque forzado (determinístico, encadena la cadena)
+            prev_row_fr = db.execute(
+                "SELECT previous_hash FROM blocks WHERE index_=?", (block_index,)
+            ).fetchone()
+            prev_prev_fr = prev_row_fr["previous_hash"] if prev_row_fr else ""
+            forced_hash = hashlib.sha256(
+                f"{block_index}|{prev_prev_fr}|{now_fr}|pool_auto".encode()
+            ).hexdigest()
             db.execute(
                 "INSERT OR IGNORE INTO blocks"
                 " (index_,previous_hash,timestamp,difficulty,reward)"
                 " VALUES (?,?,?,?,?)",
-                (block_index+1, "auto_forced", now_fr, new_diff_fr, next_reward_fr)
+                (block_index+1, forced_hash, now_fr, new_diff_fr, next_reward_fr)
             )
             db.commit()
             log.info("Bloque #%d force-resuelto | nuevo bloque #%d dif=%.2f",
@@ -1455,6 +1465,29 @@ def explorer_search():
     m = db.execute("SELECT username FROM miners WHERE username=?", (q,)).fetchone()
     if m: return jsonify({"type":"address","username":m["username"]})
     return jsonify({"status":"error","message":"Sin resultados"}), 404
+
+@app.route("/explorer/search/date")
+def explorer_search_date():
+    date_from = request.args.get("from", "")
+    date_to   = request.args.get("to", "")
+    if not date_from:
+        return jsonify({"status":"error","message":"Falta fecha de inicio"}), 400
+    try:
+        ts_from = int(datetime.strptime(date_from, "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc).timestamp())
+        if date_to:
+            ts_to = int(datetime.strptime(date_to, "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc).timestamp())
+        else:
+            ts_to = ts_from + 86400
+    except ValueError:
+        return jsonify({"status":"error","message":"Formato de fecha invalido"}), 400
+    db = get_db()
+    rows = db.execute("""
+        SELECT index_, solved_by, reward, solved_at FROM blocks
+        WHERE solved_by IS NOT NULL AND solved_at BETWEEN ? AND ?
+        ORDER BY index_ ASC LIMIT 200
+    """, (ts_from, ts_to)).fetchall()
+    blocks = [dict(r) for r in rows]
+    return jsonify({"status":"ok","count":len(blocks),"blocks":blocks})
 
 # ═══════════════════════════════════════════════════════
 #  PAGINAS HTML
