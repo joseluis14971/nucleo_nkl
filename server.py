@@ -460,7 +460,7 @@ def recalculate_difficulty(db, last_index):
     # nueva = actual * (esperado / real)
     # Cap x1.5 / x0.67 para ajustes suaves en red chica
     ratio = actual_time / expected_time if expected_time > 0 else 1.0
-    ratio = max(0.67, min(1.5, ratio))
+    ratio = max(0.67, min(2.0, ratio))
     new_d = current * (1.0 / ratio)
     new_d = max(float(MIN_DIFFICULTY), min(float(MAX_DIFFICULTY), new_d))
     # Redondear a 2 decimales para legibilidad
