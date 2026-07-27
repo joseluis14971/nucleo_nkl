@@ -373,7 +373,7 @@ footer .sep{margin:0 8px;}
       <div class="card">
         <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
         <h3>Memory-Hard: Argon2 + SHA-256</h3>
-        <p>256 KB de memoria por hash · 4 iteraciones intensivas · Mezcla XOR con accesos pseudo-aleatorios · Resistente a ASICs y GPUs.</p>
+        <p>NKL-Argon usa la función memory-hard de Argon2 como base del hashing de minado, y SHA-256 para la verificación final del bloque. Cada intento de minado obliga a reservar memoria RAM real, no solo poder de cómputo — esto encarece construir hardware dedicado tipo ASIC. <a href="docs/nkl-whitepaper-tokenomics.pdf" target="_blank" style="color:var(--teal);">Detalle técnico completo →</a></p>
         <div class="tags"><span class="tag">256KB RAM</span><span class="tag">Anti-ASIC</span></div>
       </div>
       <div class="card">
