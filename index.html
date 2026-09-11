@@ -4,7 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Núcleo NKL | Minado CPU Descentralizado</title>
-<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/x-icon" href="favicon.ico"> <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Núcleo NKL",
+  "url": "https://nucleonkl.com",
+  "logo": "https://nucleonkl.com/logo.png",
+  "parentOrganization": {
+    "@type": "Organization",
+    "name": "Núcleo Laboratorios",
+    "url": "https://nucleolaboratorios.com"
+  },
+  "sameAs": [
+    "https://github.com/joseluis14971/nucleo_nkl",
+    "https://x.com/NucleoNKL",
+    "https://t.me/nucleonkl",
+    "https://discord.gg/86Quc6Rutp",
+    "https://www.instagram.com/minar_nucleonkl/",
+    "https://www.facebook.com/profile.php?id=61564701027741",
+    "https://www.tiktok.com/@nucleonkl"
+  ]
+}
+</script>
   <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
@@ -323,8 +345,8 @@ footer .sep{margin:0 8px;}
       </div>
       <div class="card">
         <div class="card-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
-        <h3>Tecnología de vanguardia</h3>
-        <p>Desarrollado con las mejores herramientas de IA combinadas con experiencia real en minería y desarrollo blockchain.</p>
+        <h3>Código abierto y auditable</h3>
+<p>El código del algoritmo, el nodo y el minero está publicado en GitHub. Cualquiera puede revisarlo — no hace falta confiar solo en nuestra palabra.</p>
       </div>
       <div class="card">
         <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
@@ -351,7 +373,7 @@ footer .sep{margin:0 8px;}
       <div class="card">
         <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
         <h3>Memory-Hard: Argon2 + SHA-256</h3>
-        <p>256 KB de memoria por hash · 4 iteraciones intensivas · Mezcla XOR con accesos pseudo-aleatorios · Resistente a ASICs y GPUs.</p>
+        <p>NKL-Argon usa la función memory-hard de Argon2 como base del hashing de minado, y SHA-256 para la verificación final del bloque. Cada intento de minado obliga a reservar memoria RAM real, no solo poder de cómputo — esto encarece construir hardware dedicado tipo ASIC. <a href="docs/nkl-whitepaper-tokenomics.pdf" target="_blank" style="color:var(--teal);">Detalle técnico completo →</a></p>
         <div class="tags"><span class="tag">256KB RAM</span><span class="tag">Anti-ASIC</span></div>
       </div>
       <div class="card">
@@ -381,6 +403,29 @@ footer .sep{margin:0 8px;}
       <div class="tok-item"><div class="val">0,5%</div><div class="desc">Fee de transacción al proyecto</div></div>
       <div class="tok-item"><div class="val">10×</div><div class="desc">Halvings totales en 30 años</div></div>
     </div>
+    <div style="margin-top:36px;">
+      <h3 style="font-size:1.1rem;margin-bottom:12px;color:#fff;">Liberación de la reserva del equipo (30B)</h3>
+<p style="color:var(--muted);font-size:.88rem;margin-bottom:20px;max-width:640px;">Los 30B NKL de la reserva del equipo ya están emitidos desde el bloque 0 (premine), dentro del supply total de 100B — liberarlos no crea tokens nuevos ni genera inflación adicional. Lo que se libera en cada halving es el acceso/disponibilidad de esa porción ya contabilizada, no una emisión extra. Esta reserva financia el desarrollo continuo del proyecto, la infraestructura (servidores) y los costos legales de la estructura societaria — no está destinada a venta inmediata. El objetivo es automatizar esta liberación mediante smart contract antes del primer halving. Si el desarrollo no está listo a tiempo, la liberación de esa etapa se hará manualmente y quedará registrada con fecha y monto en el <a href="https://explorer.nucleonkl.com" target="_blank" style="color:var(--teal);">explorer público</a>.</p>      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:.85rem;min-width:480px;">
+          <tr style="border-bottom:1px solid var(--border);color:var(--teal);text-align:left;">
+            <th style="padding:8px 6px;">Halving</th>
+            <th style="padding:8px 6px;">Liberado</th>
+            <th style="padding:8px 6px;">Acumulado</th>
+            <th style="padding:8px 6px;">Remanente en reserva</th>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);color:var(--muted);"><td style="padding:8px 6px;">1°</td><td style="padding:8px 6px;">3B</td><td style="padding:8px 6px;">3B</td><td style="padding:8px 6px;">27B</td></tr>
+          <tr style="border-bottom:1px solid var(--border);color:var(--muted);"><td style="padding:8px 6px;">2°</td><td style="padding:8px 6px;">3B</td><td style="padding:8px 6px;">6B</td><td style="padding:8px 6px;">24B</td></tr>
+          <tr style="border-bottom:1px solid var(--border);color:var(--muted);"><td style="padding:8px 6px;">3°</td><td style="padding:8px 6px;">3B</td><td style="padding:8px 6px;">9B</td><td style="padding:8px 6px;">21B</td></tr>
+          <tr style="border-bottom:1px solid var(--border);color:var(--muted);"><td style="padding:8px 6px;">4°</td><td style="padding:8px 6px;">3B</td><td style="padding:8px 6px;">12B</td><td style="padding:8px 6px;">18B</td></tr>
+          <tr style="border-bottom:1px solid var(--border);color:var(--muted);"><td style="padding:8px 6px;">5°</td><td style="padding:8px 6px;">3B</td><td style="padding:8px 6px;">15B</td><td style="padding:8px 6px;">15B</td></tr>
+          <tr style="border-bottom:1px solid var(--border);color:var(--muted);"><td style="padding:8px 6px;">6°</td><td style="padding:8px 6px;">3B</td><td style="padding:8px 6px;">18B</td><td style="padding:8px 6px;">12B</td></tr>
+          <tr style="border-bottom:1px solid var(--border);color:var(--muted);"><td style="padding:8px 6px;">7°</td><td style="padding:8px 6px;">3B</td><td style="padding:8px 6px;">21B</td><td style="padding:8px 6px;">9B</td></tr>
+          <tr style="border-bottom:1px solid var(--border);color:var(--muted);"><td style="padding:8px 6px;">8°</td><td style="padding:8px 6px;">3B</td><td style="padding:8px 6px;">24B</td><td style="padding:8px 6px;">6B</td></tr>
+          <tr style="border-bottom:1px solid var(--border);color:var(--muted);"><td style="padding:8px 6px;">9°</td><td style="padding:8px 6px;">3B</td><td style="padding:8px 6px;">27B</td><td style="padding:8px 6px;">3B</td></tr>
+          <tr style="color:var(--muted);"><td style="padding:8px 6px;">10°</td><td style="padding:8px 6px;">3B</td><td style="padding:8px 6px;">30B</td><td style="padding:8px 6px;">0B</td></tr>
+        </table>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -395,6 +440,22 @@ footer .sep{margin:0 8px;}
       <div class="sec-card"><h4>Anti-51%</h4><p>Dificultad dinámica ajustada cada 100 bloques. Los ataques de hashrate son costosos y difíciles de sostener.</p></div>
       <div class="sec-card"><h4>Anti-GPU</h4><p>El acceso pseudo-aleatorio a memoria penaliza a las GPU paralelas respecto a una CPU bien configurada.</p></div>
       <div class="sec-card"><h4>Validación PoW</h4><p>Combina SHA-256 con bucles de memoria XOR. Doble verificación criptográfica en cada bloque minado.</p></div>
+    </div>
+  </div>
+</section><!-- POR QUÉ CONFIAR -->
+<section style="background:var(--bg-card);border-top:1px solid var(--border);">
+  <div class="section-inner">
+    <div class="section-tag">Confianza</div>
+    <h2 class="stitle">¿Por qué confiar en Núcleo NKL?</h2>
+    <p class="sdesc">Señales concretas y verificables, no promesas de marketing.</p>
+    <div class="sec-grid">
+      <div class="sec-card"><h4>Blockchain propia</h4><p>No depende de otra red ni de un token sobre una chain ajena.</p></div>
+      <div class="sec-card"><h4>Sin preventa, sin ICO</h4><p>Nadie compró NKL antes que nadie más. El minado es el único origen del token.</p></div>
+      <div class="sec-card"><h4>Código público</h4><p>Algoritmo, nodo y minero disponibles en <a href="https://github.com/joseluis14971/nucleo_nkl" target="_blank" style="color:var(--teal);">GitHub</a> para auditoría de cualquiera.</p></div>
+      <div class="sec-card"><h4>Explorer y pool en vivo</h4><p>Actividad real y verificable en <a href="https://explorer.nucleonkl.com" target="_blank" style="color:var(--teal);">explorer.nucleonkl.com</a> y <a href="http://pool.nucleonkl.com" target="_blank" style="color:var(--teal);">pool.nucleonkl.com</a>.</p></div>
+      <div class="sec-card"><h4>Whitepapers técnicos</h4><p>Documentación completa de algoritmo, tokenomics y protocolo, accesible sin registro.</p></div>
+      <div class="sec-card"><h4>Reserva del equipo con cronograma público</h4><p>El 30% de reserva tiene fecha y monto de liberación publicados, verificables en el explorer.</p></div>
+      <div class="sec-card"><h4>Autor identificado</h4><p>Jose Luis — fundador y desarrollador, Moreno, Buenos Aires, Argentina. No es un equipo anónimo.</p></div>
     </div>
   </div>
 </section>
@@ -592,7 +653,26 @@ footer .sep{margin:0 8px;}
 
   </div>
 </section>
-
+<!-- ENLACES DEL ECOSISTEMA -->
+<section id="enlaces" style="background:var(--bg-card);border-top:1px solid var(--border);">
+  <div class="section-inner">
+    <div class="section-tag">Transparencia</div>
+    <h2 class="stitle">Enlaces verificables</h2>
+    <p class="sdesc">Todo el código, la actividad de red y el ecosistema Núcleo, accesibles públicamente.</p>
+    <ul style="list-style:none;line-height:2.3;font-size:.95rem;color:var(--muted);">
+      <li>Código fuente del proyecto (repositorio público en GitHub): <a href="https://github.com/joseluis14971/nucleo_nkl" target="_blank" style="color:var(--teal);">github.com/joseluis14971/nucleo_nkl</a></li>
+      <li>Pool de minado en vivo: <a href="http://pool.nucleonkl.com" target="_blank" style="color:var(--teal);">pool.nucleonkl.com</a></li>
+      <li>Explorador de bloques en vivo: <a href="https://explorer.nucleonkl.com" target="_blank" style="color:var(--teal);">explorer.nucleonkl.com</a></li>
+      <li>Whitepaper I — Staking y NúcleoPoP: <a href="docs/nkl-whitepaper-staking.pdf" target="_blank" style="color:var(--teal);">nucleonkl.com/docs/nkl-whitepaper-staking.pdf</a></li>
+      <li>Whitepaper II — Tokenomics y Algoritmo NKL-Argon: <a href="docs/nkl-whitepaper-tokenomics.pdf" target="_blank" style="color:var(--teal);">nucleonkl.com/docs/nkl-whitepaper-tokenomics.pdf</a></li>
+      <li>Whitepaper III — Visión del Proyecto y Guía del Minero: <a href="docs/nkl-whitepaper-miner-guide.pdf" target="_blank" style="color:var(--teal);">nucleonkl.com/docs/nkl-whitepaper-miner-guide.pdf</a></li>
+      <li>Whitepaper IV — Pool de Distribución Nativo: <a href="docs/nkl-whitepaper-pool-nativo.pdf" target="_blank" style="color:var(--teal);">nucleonkl.com/docs/nkl-whitepaper-pool-nativo.pdf</a></li>
+      <li>Núcleo Laboratorios (ecosistema completo): <a href="https://nucleolaboratorios.com" target="_blank" style="color:var(--teal);">nucleolaboratorios.com</a></li>
+      <li>Núcleo CRM (software inmobiliario): <a href="https://nucleocrm.net" target="_blank" style="color:var(--teal);">nucleocrm.net</a></li>
+      <li>Núcleo CERT (certificación digital legal): <a href="https://nucleocert.com" target="_blank" style="color:var(--teal);">nucleocert.com</a></li>
+    </ul><p style="margin-top:24px;font-size:.88rem;color:var(--muted);">Un proyecto de Jose Luis — Fundador y desarrollador · Moreno, Buenos Aires, Argentina.</p>
+  </div>
+</section>
 <!-- FOOTER -->
 <footer>
   <p>© 2026 Núcleo NKL — Blockchain propia con algoritmo NKL-Argon · Minado CPU Descentralizado</p>
