@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nucleo NKL — Mining Pool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070b0f;--surface:#0c1218;--panel:#101820;--border:#18283a;
+  --accent:#00e5ff;--green:#00ff9d;--orange:#ff8c42;--purple:#b47aff;
+  --red:#ff4d6d;--text:#c5dae8;--muted:#b0c8d8;
+  --mono:"Share Tech Mono",monospace;--sans:"Rajdhani",sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(0,229,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,229,255,.025) 1px,transparent 1px);
+  background-size:44px 44px}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.12) 2px,rgba(0,0,0,.12) 4px)}
+.wrap{position:relative;z-index:1;max-width:1320px;margin:0 auto;padding:0 24px 80px}
+
+/* HEADER */
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 0 14px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:12px}
+.logo{display:flex;align-items:center;gap:14px}
+.logo-img{width:52px;height:52px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(0,229,255,.4))}
+.logo-texts{display:flex;flex-direction:column}
+.logo-name{font-size:22px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:#fff;line-height:1}
+.logo-sub{font-family:var(--mono);font-size:9px;color:#a0c0d5;letter-spacing:3px;margin-top:3px}
+.hdr-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pill{display:flex;align-items:center;gap:6px;border-radius:20px;padding:5px 14px;font-family:var(--mono);font-size:10px;letter-spacing:1px}
+.pill-green{background:rgba(0,255,157,.07);border:1px solid rgba(0,255,157,.2);color:var(--green)}
+.pill-blue{background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.2);color:var(--accent)}
+.dot{width:7px;height:7px;border-radius:50%;animation:pulse 2s ease-in-out infinite}
+.dot-green{background:var(--green);box-shadow:0 0 8px var(--green)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.refresh-btn{background:transparent;border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:11px;padding:6px 14px;border-radius:4px;cursor:pointer;letter-spacing:1px;transition:all .2s}
+.refresh-btn:hover{border-color:var(--accent);color:var(--accent)}
+.login-btn{background:var(--accent);border:none;color:#000;font-family:var(--mono);font-size:11px;padding:7px 16px;border-radius:4px;cursor:pointer;letter-spacing:1px;font-weight:600;transition:opacity .2s}
+.login-btn:hover{opacity:.85}
+.logout-btn{background:transparent;border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:4px;cursor:pointer;transition:all .2s}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
+
+/* SECTION */
+.sec{margin:32px 0 14px;display:flex;align-items:center;gap:12px}
+.sec-title{font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--text);white-space:nowrap}
+.sec-line{flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+.sec-badge{font-family:var(--mono);font-size:9px;color:#a0c0d5;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:2px 9px}
+
+/* CARDS */
+.grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px 20px;position:relative;overflow:hidden;animation:fadeUp .4s ease both}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
+.card.c-green::before{background:linear-gradient(90deg,var(--green),transparent)}
+.card.c-orange::before{background:linear-gradient(90deg,var(--orange),transparent)}
+.card.c-purple::before{background:linear-gradient(90deg,var(--purple),transparent)}
+.card-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:#d0e8f5;text-transform:uppercase;margin-bottom:8px}
+.card-value{font-family:var(--mono);font-size:28px;color:var(--accent);line-height:1;text-shadow:0 0 16px rgba(0,229,255,.3)}
+.card.c-green .card-value{color:var(--green);text-shadow:0 0 16px rgba(0,255,157,.3)}
+.card.c-orange .card-value{color:var(--orange);text-shadow:0 0 16px rgba(255,140,66,.3)}
+.card.c-purple .card-value{color:var(--purple);text-shadow:0 0 16px rgba(180,122,255,.3)}
+.card-sub{font-family:var(--mono);font-size:9px;color:#a0c0d5;margin-top:5px;letter-spacing:1px}
+.card:nth-child(1){animation-delay:.04s}.card:nth-child(2){animation-delay:.08s}
+.card:nth-child(3){animation-delay:.12s}.card:nth-child(4){animation-delay:.16s}
+
+/* PROGRESS */
+.progress-wrap{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px 22px}
+.prog-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.prog-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:#d0e8f5;text-transform:uppercase}
+.prog-pct{font-family:var(--mono);font-size:18px;color:var(--accent)}
+.prog-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--green));transition:width .8s ease;box-shadow:0 0 10px rgba(0,229,255,.4)}
+.prog-detail{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:#a0c0d5}
+
+/* HALVING */
+.halving-card{background:var(--surface);border:1px solid rgba(255,140,66,.25);border-radius:8px;padding:18px 22px}
+.halving-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.halving-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--orange);text-transform:uppercase}
+.halving-era{font-family:var(--mono);font-size:11px;color:#d0e8f5}
+.halving-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px}
+.hfield label{font-family:var(--mono);font-size:9px;color:#d0e8f5;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px}
+.hfield .val{font-family:var(--mono);font-size:14px;color:var(--text)}
+.hfield .val.accent{color:var(--orange)}
+
+/* BLOCK */
+.block-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px 22px}
+.block-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.bfield label{font-family:var(--mono);font-size:9px;color:#d0e8f5;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px}
+.bfield .val{font-family:var(--mono);font-size:13px;color:var(--text);word-break:break-all}
+.bfield .val.hi{color:var(--accent);font-size:22px;text-shadow:0 0 12px rgba(0,229,255,.3)}
+
+/* MI CUENTA */
+.my-account-wrap{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.login-section{padding:24px}
+.login-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.login-field{display:flex;flex-direction:column;gap:5px;flex:1;min-width:160px}
+.login-field label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:#d0e8f5;text-transform:uppercase}
+.login-field input{background:var(--panel);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:10px 12px;border-radius:4px;outline:none;transition:border-color .2s}
+.login-field input:focus{border-color:var(--accent)}
+.btn-login{background:var(--accent);border:none;color:#000;font-family:var(--mono);font-size:11px;font-weight:700;padding:10px 20px;border-radius:4px;cursor:pointer;letter-spacing:1px;transition:opacity .2s;white-space:nowrap}
+.btn-login:hover{opacity:.85}
+.login-hint{font-family:var(--mono);font-size:10px;color:#a0c0d5;padding:0 24px 16px}
+.login-err{font-family:var(--mono);font-size:10px;color:var(--red);padding:0 24px 12px;display:none}
+.my-stats{padding:20px 24px;display:none}
+.my-stats-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.my-uname{font-family:var(--mono);font-size:16px;color:var(--accent)}
+.my-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.my-field{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:14px 16px}
+.my-field label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:#d0e8f5;text-transform:uppercase;display:block;margin-bottom:6px}
+.my-field .v{font-family:var(--mono);font-size:20px;color:var(--text)}
+.my-field .v.big{color:var(--green);font-size:24px}
+.api-box{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:12px 16px;margin-bottom:12px}
+.api-box label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:#d0e8f5;text-transform:uppercase;display:block;margin-bottom:6px}
+.api-key-val{font-family:var(--mono);font-size:10px;color:var(--muted);word-break:break-all}
+.copy-btn{background:transparent;border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:3px;cursor:pointer;margin-left:8px;transition:all .2s}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+.tip-box{background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.12);border-radius:6px;padding:12px 16px;font-family:var(--mono);font-size:10px;color:#a0c0d5;line-height:1.7}
+.tip-box code{color:var(--accent)}
+
+/* LEADERBOARD */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead tr{background:var(--panel);border-bottom:1px solid var(--border)}
+th{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:#d0e8f5;text-transform:uppercase;padding:13px 16px;text-align:left;font-weight:400}
+tbody tr{border-bottom:1px solid rgba(24,40,58,.7);transition:background .15s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(0,229,255,.025)}
+tbody tr.my-row{background:rgba(0,229,255,.06)}
+td{padding:12px 16px;font-size:14px}
+.td-rank{font-family:var(--mono);font-size:12px;color:#a0c0d5;width:48px}
+.td-user{font-family:var(--mono);font-size:13px;color:var(--accent)}
+.td-num{font-family:var(--mono);font-size:13px;color:var(--text)}
+.td-bal{font-family:var(--mono);font-size:13px;color:var(--green)}
+.td-time{font-family:var(--mono);font-size:11px;color:#a0c0d5}
+.bar-wrap{width:100px}
+.bar{height:3px;background:var(--border);border-radius:2px}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:2px;transition:width .6s ease}
+
+/* MISC */
+.loading{display:flex;align-items:center;justify-content:center;padding:50px;gap:10px;color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:2px}
+.spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{padding:46px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px}
+footer{border-top:1px solid var(--border);padding:18px 0 0;margin-top:40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+footer span{font-family:var(--mono);font-size:9px;color:#a0c0d5;letter-spacing:1px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="logo">
+    <img class="logo-img" src="/static/logo.jpg" alt="NKL Logo">
+    <div class="logo-texts">
+      <div class="logo-name">Nucleo</div>
+      <div class="logo-sub">NKL Mining Pool</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <div class="pill pill-green"><div class="dot dot-green"></div>ONLINE</div>
+    <div class="pill pill-blue" id="era-pill">ERA 0</div>
+    <button class="refresh-btn" onclick="loadAll()">REFRESH</button>
+    <button class="login-btn"  id="hdr-login-btn"  onclick="scrollToLogin()" style="display:none">MI CUENTA</button>
+    <button class="logout-btn" id="hdr-logout-btn" onclick="doLogout()"      style="display:none">SALIR</button>
+  </div>
+</header>
+
+<div class="sec"><span class="sec-title">Red en Vivo</span><div class="sec-line"></div></div>
+<div class="grid-4">
+  <div class="card">         <div class="card-label">Shares Totales</div>    <div class="card-value" id="s-shares">-</div></div>
+  <div class="card c-green"> <div class="card-label">Mineros Activos (3 días)</div>   <div class="card-value" id="s-miners">-</div><div id="s-registered" style="font-size:.65rem;opacity:.75;margin-top:4px;letter-spacing:.05em">-</div></div>
+  <div class="card c-orange"><div class="card-label">Bloques Resueltos</div> <div class="card-value" id="s-blocks">-</div></div>
+  <div class="card c-purple"><div class="card-label">NKL Emitidos</div>      <div class="card-value" id="s-issued">-</div><div class="card-sub" id="s-pct">-</div></div>
+</div>
+
+<div class="sec"><span class="sec-title">Emision Acumulada</span><div class="sec-line"></div></div>
+<div class="progress-wrap">
+  <div class="prog-header">
+    <span class="prog-label">Progreso - 70,000,000,000 NKL para mineros</span>
+    <span class="prog-pct" id="prog-pct">0.000000%</span>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  <div class="prog-detail">
+    <span id="prog-mined">0 NKL minados</span>
+    <span>Total: 100B NKL - 30B premine + 70B mineable</span>
+  </div>
+</div>
+
+<div class="sec"><span class="sec-title">Halving</span><div class="sec-line"></div></div>
+<div class="halving-card">
+  <div class="halving-header">
+    <span class="halving-title">Proximo Halving (-30%)</span>
+    <span class="halving-era" id="halving-era">Era 0 - Recompensa inicial</span>
+  </div>
+  <div class="halving-grid">
+    <div class="hfield"><label>Recompensa Actual</label>       <div class="val accent" id="h-reward">-</div></div>
+    <div class="hfield"><label>Proximo Halving (bloque)</label> <div class="val" id="h-next">-</div></div>
+    <div class="hfield"><label>Bloques Restantes</label>        <div class="val" id="h-remain">-</div></div>
+    <div class="hfield"><label>Tiempo Estimado</label>          <div class="val" id="h-time">-</div></div>
+  </div>
+</div>
+
+<div class="sec"><span class="sec-title">Bloque en Curso</span><div class="sec-line"></div></div>
+<div class="block-card">
+  <div class="block-grid" id="block-grid">
+    <div class="loading"><div class="spinner"></div>CARGANDO</div>
+  </div>
+</div>
+
+<div class="sec" id="my-account-sec">
+  <span class="sec-title">Mi Cuenta</span>
+  <div class="sec-line"></div>
+  <span class="sec-badge" id="my-badge">Ingresa para ver tus stats</span>
+</div>
+<div class="my-account-wrap">
+  <div id="login-section" class="login-section">
+    <div class="login-row">
+      <div class="login-field"><label>Usuario</label><input id="inp-user" type="text" placeholder="tu_usuario"></div>
+      <div class="login-field"><label>API Key</label><input id="inp-key"  type="password" placeholder="api key del mi_wallet_nkl.json"></div>
+      <button class="btn-login" onclick="doLogin()">INGRESAR</button>
+    </div>
+    <div class="login-err" id="login-err"></div>
+    <div class="login-hint">Tu API key esta en el archivo <strong style="color:var(--accent)">mi_wallet_nkl.json</strong> generado al ejecutar el minero.</div>
+  </div>
+  <div id="my-stats" class="my-stats">
+    <div class="my-stats-hdr">
+      <span class="my-uname" id="my-uname">-</span>
+      <button class="logout-btn" onclick="doLogout()">CERRAR SESION</button>
+    </div>
+    <div class="my-grid">
+      <div class="my-field"><label>Balance NKL</label> <div class="v big" id="my-balance">-</div></div>
+      <div class="my-field"><label>Shares</label>      <div class="v"    id="my-shares">-</div></div>
+      <div class="my-field"><label>Ultimo Share</label><div class="v"    id="my-last">-</div></div>
+    </div>
+    <div class="api-box">
+      <label>API Key <button class="copy-btn" onclick="copyKey()">COPIAR</button></label>
+      <div class="api-key-val" id="my-key-val">-</div>
+    </div>
+    <div class="tip-box">
+      Para minar desde otra PC con el mismo wallet:<br>
+      <code>python miner.py --user <span id="tip-user">TU_USUARIO</span> --key <span id="tip-key">TU_KEY</span></code>
+    </div>
+  </div>
+</div>
+
+<div id="my-pos" style="display:none;margin:0 0 14px 0;padding:14px 18px;border:1px solid var(--green,#22c55e);border-radius:6px;background:rgba(34,197,94,.06)">
+  <div class="sec-title" style="color:var(--green,#22c55e)">Tu posición</div>
+  <div style="display:flex;gap:32px;flex-wrap:wrap;margin-top:10px;font-size:.85rem">
+    <div>PUESTO <b id="mp-rank" style="font-size:1.3rem;color:var(--green,#22c55e)">-</b> de <span id="mp-total">-</span> mineros</div>
+    <div>BALANCE <b id="mp-bal">-</b> NKL</div>
+    <div id="mp-next" style="opacity:.8"></div>
+  </div>
+</div>
+<div id="newest-box" style="display:none;margin:0 0 14px 0;padding:14px 18px;border:1px solid var(--cyan,#22d3ee);border-radius:6px;background:rgba(34,211,238,.06)">
+  <div class="sec-title" style="color:var(--cyan,#22d3ee)">Últimos en sumarse</div>
+  <div id="newest-list" style="margin-top:10px;font-size:1rem;line-height:1.8"></div>
+</div>
+<div class="sec">
+  <span class="sec-title">Leaderboard</span>
+  <div class="sec-line"></div>
+  <span class="sec-badge" id="miner-count">0 mineros</span>
+</div>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Usuario</th><th>Shares</th><th>Participacion</th><th>Balance NKL</th><th>Ultimo Share</th></tr></thead>
+    <tbody id="lb-body"><tr><td colspan="6"><div class="loading"><div class="spinner"></div>CARGANDO</div></td></tr></tbody>
+  </table>
+</div>
+
+<footer>
+  <span>NUCLEO NKL POOL v2.0 - 100B SUPPLY - 30 ANOS - HALVING 3 ANOS (-30%) - FEE 0.5%</span>
+  <span id="last-updated">-</span>
+</footer>
+</div>
+
+<script>
+const HALVING_INTERVAL=175320, BLOCK_TIME_MIN=9;
+let SESSION={username:null,apiKey:null};
+
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function fmtNum(n){if(n==null||isNaN(n))return"-";if(n>=1e9)return(n/1e9).toFixed(2)+"B";if(n>=1e6)return(n/1e6).toFixed(2)+"M";if(n>=1e3)return(n/1e3).toFixed(1)+"K";return Number(n).toLocaleString()}
+function timeAgo(ts){if(!ts)return"-";const d=Math.floor(Date.now()/1000)-ts;if(d<60)return d+"s";if(d<3600)return Math.floor(d/60)+"m";return Math.floor(d/3600)+"h"}
+function blocksToTime(b){if(!b||b<=0)return"-";const m=b*BLOCK_TIME_MIN;if(m<60)return"~"+m+" min";if(m<1440)return"~"+(m/60).toFixed(1)+" horas";if(m<43800)return"~"+(m/1440).toFixed(1)+" dias";if(m<525960)return"~"+(m/43800).toFixed(1)+" meses";return"~"+(m/525960).toFixed(2)+" anos"}
+
+function loadSession(){try{const s=localStorage.getItem("nkl_s");if(s){SESSION=JSON.parse(s);return !!(SESSION.username&&SESSION.apiKey)}}catch(e){}return false}
+function saveSession(){localStorage.setItem("nkl_s",JSON.stringify(SESSION))}
+function clearSession(){localStorage.removeItem("nkl_s");SESSION={username:null,apiKey:null}}
+
+async function doLogin(){
+  const user=document.getElementById("inp-user").value.trim();
+  const key =document.getElementById("inp-key").value.trim();
+  const err =document.getElementById("login-err");
+  err.style.display="none";
+  if(!user||!key){err.textContent="Ingresa usuario y API key";err.style.display="block";return}
+  try{
+    const r=await fetch("/stats/me",{headers:{"X-API-Key":key}});
+    const d=await r.json();
+    if(d.status==="ok"&&d.username===user){
+      SESSION={username:user,apiKey:key};saveSession();showMyStats(d);
+    }else{err.textContent="Usuario o API key incorrectos";err.style.display="block"}
+  }catch(e){err.textContent="Error de conexion";err.style.display="block"}
+}
+
+function doLogout(){
+  clearSession();
+  document.getElementById("login-section").style.display="block";
+  document.getElementById("my-stats").style.display="none";
+  document.getElementById("my-badge").textContent="Ingresa para ver tus stats";
+  document.getElementById("hdr-login-btn").style.display="flex";
+  document.getElementById("hdr-logout-btn").style.display="none";
+  document.getElementById("inp-user").value="";
+  document.getElementById("inp-key").value="";
+  loadLeaderboard();
+}
+
+function showMyStats(d){
+  document.getElementById("login-section").style.display="none";
+  document.getElementById("my-stats").style.display="block";
+  document.getElementById("my-badge").textContent="Conectado: "+d.username;
+  document.getElementById("my-uname").textContent=d.username;
+  document.getElementById("my-balance").textContent=Number(d.balance||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:5})+" NKL";
+  document.getElementById("my-shares").textContent=(d.shares||0).toLocaleString();
+  document.getElementById("my-last").textContent=timeAgo(d.last_share);
+  document.getElementById("my-key-val").textContent=SESSION.apiKey;
+  document.getElementById("tip-user").textContent=d.username;
+  document.getElementById("tip-key").textContent=SESSION.apiKey.slice(0,16)+"...";
+  document.getElementById("hdr-login-btn").style.display="none";
+  document.getElementById("hdr-logout-btn").style.display="flex";
+  loadLeaderboard();
+}
+
+async function refreshMyStats(){
+  if(!SESSION.username||!SESSION.apiKey)return;
+  try{const r=await fetch("/stats/me",{headers:{"X-API-Key":SESSION.apiKey}});const d=await r.json();if(d.status==="ok")showMyStats(d)}catch(e){}
+}
+
+function copyKey(){
+  if(!SESSION.apiKey)return;
+  navigator.clipboard.writeText(SESSION.apiKey).then(()=>{const b=document.querySelector(".copy-btn");b.textContent="COPIADO!";setTimeout(()=>b.textContent="COPIAR",2000)});
+}
+
+function scrollToLogin(){document.getElementById("my-account-sec").scrollIntoView({behavior:"smooth"});setTimeout(()=>document.getElementById("inp-user").focus(),400)}
+
+async function loadPoolStats(){
+  try{
+    const data=await fetch("/stats/pool").then(r=>r.json());
+    if(data.status!=="ok")return;
+    document.getElementById("s-shares").textContent=fmtNum(data.total_shares);
+    document.getElementById("s-miners").textContent=fmtNum(data.active_miners_72h||data.active_miners);
+    window.REGISTERED=data.registered_miners||0;
+    document.getElementById("s-registered").textContent=(data.active_miners||0)+" EN 24H \u00b7 "+window.REGISTERED+" REGISTRADOS";
+    document.getElementById("s-blocks").textContent=fmtNum(data.blocks_solved);
+    document.getElementById("s-issued").textContent=fmtNum(data.total_issued_nkl);
+    document.getElementById("s-pct").textContent=(data.pct_mined||0).toFixed(6)+"% del mineable";
+    const pct=Math.min(data.pct_mined||0,100);
+    document.getElementById("prog-pct").textContent=pct.toFixed(6)+"%";
+    document.getElementById("prog-fill").style.width=pct+"%";
+    document.getElementById("prog-mined").textContent=Number(data.total_issued_nkl||0).toLocaleString()+" NKL minados";
+    const cb=data.current_block||{};const era=cb.era||0;
+    document.getElementById("era-pill").textContent="ERA "+era;
+    document.getElementById("halving-era").textContent="Era "+era+" - "+(era===0?"Recompensa inicial":"Halving #"+era+" (-30%)");
+    document.getElementById("h-reward").textContent=cb.reward?Number(cb.reward).toLocaleString()+" NKL":"-";
+    document.getElementById("h-next").textContent=data.next_halving_block?"#"+Number(data.next_halving_block).toLocaleString():"-";
+    const remain=(data.next_halving_block&&cb.index)?Math.max(0,data.next_halving_block-cb.index):0;
+    document.getElementById("h-remain").textContent=remain>0?Number(remain).toLocaleString()+" bloques":"Inmediato";
+    document.getElementById("h-time").textContent=remain>0?blocksToTime(remain):"-";
+    if(cb.index){document.getElementById("block-grid").innerHTML=`
+      <div class="bfield"><label>Indice</label><div class="val hi">#${Number(cb.index).toLocaleString()}</div></div>
+      <div class="bfield"><label>Dificultad</label><div class="val">${cb.difficulty} ceros hex</div></div>
+      <div class="bfield"><label>Recompensa</label><div class="val">${cb.reward?Number(cb.reward).toLocaleString():"-"} NKL</div></div>
+      <div class="bfield"><label>Era / Halvings</label><div class="val">${era} / 10 (cada 3 anos -30%)</div></div>`}
+  }catch(e){console.error(e)}
+}
+
+async function loadLeaderboard(){
+  const tbody=document.getElementById("lb-body");
+  try{
+    const data=await fetch("/stats/leaderboard").then(r=>r.json());
+    const rows=data.leaderboard||[];
+    window.LB_COUNT=rows.length;
+    if(!rows.length){tbody.innerHTML="<tr><td colspan='6'><div class='empty'>SIN MINEROS AUN</div></td></tr>";return}
+    const maxBal=rows[0].balance||1;
+    tbody.innerHTML=rows.map((r,i)=>{
+      const rank=i+1;const medal=rank<=3?["#1","#2","#3"][rank-1]:rank;
+      const pct=((r.balance/maxBal)*100).toFixed(1);
+      const isMe=SESSION.username&&r.username===SESSION.username;
+      return`<tr class="${isMe?"my-row":""}">
+        <td class="td-rank">${medal}</td>
+        <td class="td-user">${esc(r.username)}${isMe?" &laquo; TU":""}</td>
+        <td class="td-num">${(r.shares||0).toLocaleString()}</td>
+        <td class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:${pct}%"></div></div></td>
+        <td class="td-bal">${Number(r.balance||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:5})}</td>
+        <td class="td-time">${timeAgo(r.last_share)}</td>
+      </tr>`;
+    }).join("");
+  }catch(e){tbody.innerHTML="<tr><td colspan='6'><div class='empty' style='color:var(--red)'>ERROR</div></td></tr>"}
+}
+
+async function loadMyPosition(){
+  const box=document.getElementById("my-pos");
+  if(!SESSION.username||!SESSION.apiKey){box.style.display="none";return}
+  try{
+    const d=await fetch("/stats/position",{headers:{"X-API-Key":SESSION.apiKey}}).then(r=>r.json());
+    if(d.status!=="ok"){box.style.display="none";return}
+    document.getElementById("mp-rank").textContent="#"+d.rank;
+    document.getElementById("mp-total").textContent=d.total;
+    document.getElementById("mp-bal").textContent=Number(d.balance||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:5});
+    document.getElementById("mp-next").textContent=d.next?("faltan "+Number(d.next.gap_nkl).toLocaleString(undefined,{maximumFractionDigits:2})+" NKL para superar a "+d.next.username):"Estás primero";
+    box.style.display="block";
+  }catch(e){box.style.display="none"}
+}
+
+async function loadNewest(){
+  const box=document.getElementById("newest-box");
+  try{
+    const d=await fetch("/stats/newest").then(r=>r.json());
+    const list=d.newest||[];
+    if(d.status!=="ok"||!list.length){box.style.display="none";return}
+    document.getElementById("newest-list").innerHTML=list.map(m=>"<b>"+esc(m.username)+"</b> <span style='opacity:.6;font-size:.8rem'>(hace "+timeAgo(m.created_at)+")</span>").join("&nbsp;&nbsp;\u00b7&nbsp;&nbsp;");
+    box.style.display="block";
+  }catch(e){box.style.display="none"}
+}
+
+async function loadAll(){
+  await Promise.all([loadPoolStats(),loadLeaderboard()]);
+  const n=window.LB_COUNT||0, reg=window.REGISTERED||n;
+  document.getElementById("miner-count").textContent=(reg>n?"Top "+n+" de "+reg:n)+" mineros";
+  if(SESSION.username)refreshMyStats();
+  loadMyPosition();
+  loadNewest();
+  document.getElementById("last-updated").textContent="Actualizado: "+new Date().toLocaleTimeString("es-AR");
+}
+
+document.getElementById("inp-user").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin()});
+document.getElementById("inp-key" ).addEventListener("keydown",e=>{if(e.key==="Enter")doLogin()});
+document.getElementById("hdr-login-btn").style.display="flex";
+
+if(loadSession()&&SESSION.username&&SESSION.apiKey){
+  fetch("/stats/me",{headers:{"X-API-Key":SESSION.apiKey}})
+    .then(r=>r.json()).then(d=>{if(d.status==="ok")showMyStats(d);else clearSession();}).catch(()=>{});
+}
+
+loadAll();
+setInterval(loadAll,15000);
+</script>
+</body>
+</html>

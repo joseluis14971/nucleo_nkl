@@ -1,0 +1,23 @@
+# datos
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+# backups y restauracion
+*backup*
+*_backup*
+server_v*.py
+templates_backup_*/
+patch_*.py
+# runtime
+nohup.out
+*.log
+__pycache__/
+*.pyc
+venv/
+.env
+yntax is ok
+*.bak_*
+explorer_limpio.html
+explorer_preview.html
+explorer_ssr_patch.py

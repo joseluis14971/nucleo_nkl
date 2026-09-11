@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NKL Explorer — Núcleo Block Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Barlow+Condensed:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #04080c;
+  --s1:       #080f16;
+  --s2:       #0c1620;
+  --border:   #132030;
+  --b2:       #1c3048;
+  --accent:   #e8f400;
+  --cyan:     #00cfff;
+  --orange:   #ff6b00;
+  --green:    #00e87a;
+  --red:      #ff3d5a;
+    --text:      #ffffff;
+    --muted:     #ffffff;
+  --mono:     'IBM Plex Mono', monospace;
+  --display:  'Barlow Condensed', sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;min-height:100vh;overflow-x:hidden}
+
+/* ── GRAIN OVERLAY ── */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:.4;
+}
+
+/* ── ACCENT LINE TOP ── */
+body::after{
+  content:'';position:fixed;top:0;left:0;right:0;height:2px;z-index:100;
+  background:linear-gradient(90deg,transparent,var(--accent),var(--cyan),transparent);
+}
+
+.page{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:0 20px 80px}
+
+/* ─── HEADER ─── */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:24px 0 16px;border-bottom:1px solid var(--border);
+  flex-wrap:wrap;gap:12px;
+}
+.logo-block{display:flex;align-items:center;gap:16px}
+.logo-hex{
+  width:44px;height:44px;background:var(--accent);
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-size:16px;font-weight:800;color:#000;
+  flex-shrink:0;
+}
+.logo-text{font-family:var(--display);font-size:28px;font-weight:800;letter-spacing:2px;color:#fff;line-height:1}
+.logo-sub{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-top:2px}
+.hdr-links{display:flex;gap:8px}
+.hdr-link{
+  font-size:10px;letter-spacing:1px;color:var(--muted);
+  border:1px solid var(--border);border-radius:3px;
+  padding:5px 12px;text-decoration:none;transition:all .2s;text-transform:uppercase;
+}
+.hdr-link:hover{color:var(--accent);border-color:var(--accent)}
+.hdr-link.active{color:var(--bg);background:var(--accent);border-color:var(--accent)}
+
+/* ─── SEARCH BAR ─── */
+.search-wrap{
+  margin:24px 0;
+  background:var(--s1);border:1px solid var(--border);border-radius:6px;
+  display:flex;align-items:center;overflow:hidden;
+  transition:border-color .2s;
+}
+.search-wrap:focus-within{border-color:var(--accent)}
+.search-icon{padding:0 14px;color:var(--muted);font-size:16px;flex-shrink:0}
+#search-input{
+  flex:1;background:transparent;border:none;outline:none;
+  color:var(--text);font-family:var(--mono);font-size:13px;
+  padding:14px 0;
+}
+#search-input::placeholder{color:var(--muted)}
+#search-btn{
+  background:var(--accent);border:none;cursor:pointer;
+  font-family:var(--display);font-size:13px;font-weight:700;
+  letter-spacing:1px;color:#000;padding:0 22px;height:100%;min-height:48px;
+  text-transform:uppercase;transition:opacity .2s;
+}
+#search-btn:hover{opacity:.85}
+.search-hint{font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:6px}
+
+/* ─── SEARCH RESULT ─── */
+#search-result{
+  background:var(--s1);border:1px solid var(--b2);border-radius:6px;
+  padding:20px;margin-bottom:20px;display:none;animation:fadeUp .25s ease;
+}
+.sr-type{
+  font-family:var(--display);font-size:11px;font-weight:700;
+  letter-spacing:3px;text-transform:uppercase;color:var(--accent);
+  margin-bottom:12px;
+}
+.sr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.sr-field label{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:3px}
+.sr-field .v{font-size:12px;color:var(--text);word-break:break-all}
+.sr-field .v.hi{color:var(--accent);font-size:18px}
+.sr-field .v.link{color:var(--cyan);cursor:pointer;text-decoration:underline}
+
+/* ─── STAT STRIP ─── */
+.stat-strip{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:1px;background:var(--border);border:1px solid var(--border);
+  border-radius:6px;overflow:hidden;margin-bottom:28px;
+}
+.stat-item{background:var(--s1);padding:16px 18px}
+.stat-item label{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:6px}
+.stat-item .sv{font-family:var(--display);font-size:22px;font-weight:700;color:#fff;line-height:1}
+.stat-item .ss{font-size:9px;color:var(--muted);margin-top:3px}
+
+/* ─── SECTION ─── */
+.sec{display:flex;align-items:center;gap:12px;margin:28px 0 14px}
+.sec-title{font-family:var(--display);font-size:14px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#fff;white-space:nowrap}
+.sec-line{flex:1;height:1px;background:var(--border)}
+.sec-extra{font-size:9px;color:var(--muted);letter-spacing:1px}
+
+/* ─── BLOCKS TABLE ─── */
+.blocks-table{
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:6px;overflow:hidden;
+}
+.bt-head{
+  display:grid;
+  grid-template-columns:80px 1fr 80px 110px 120px 100px;
+  background:var(--s2);border-bottom:1px solid var(--border);
+  padding:10px 16px;gap:8px;
+}
+.bt-head span{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.bt-row{
+  display:grid;
+  grid-template-columns:80px 1fr 80px 110px 120px 100px;
+  padding:12px 16px;gap:8px;border-bottom:1px solid rgba(19,32,48,.8);
+  align-items:center;transition:background .15s;cursor:pointer;
+}
+.bt-row:last-child{border-bottom:none}
+.bt-row:hover{background:rgba(232,244,0,.03)}
+.bt-index{font-size:13px;color:var(--accent);font-weight:500}
+.bt-hash{font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bt-diff{font-size:12px;color:var(--text)}
+.bt-reward{font-size:12px;color:var(--green)}
+.bt-miner{font-size:11px;color:var(--cyan);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bt-time{font-size:10px;color:var(--muted)}
+
+/* ─── BLOCK DETAIL MODAL ─── */
+#modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(4,8,12,.92);
+  z-index:200;align-items:center;justify-content:center;padding:20px;
+}
+#modal-overlay.open{display:flex}
+#modal{
+  background:var(--s1);border:1px solid var(--b2);border-radius:8px;
+  max-width:780px;width:100%;max-height:90vh;overflow-y:auto;
+  animation:modalIn .25s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px;border-bottom:1px solid var(--border);
+}
+.modal-title{font-family:var(--display);font-size:20px;font-weight:700;letter-spacing:2px;color:#fff}
+.modal-close{background:none;border:1px solid var(--border);color:var(--muted);font-size:16px;cursor:pointer;padding:4px 10px;border-radius:3px;transition:all .2s}
+.modal-close:hover{color:var(--red);border-color:var(--red)}
+.modal-body{padding:22px}
+.modal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:22px}
+.mf label{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:4px}
+.mf .v{font-size:12px;color:var(--text);word-break:break-all}
+.mf .v.big{font-family:var(--display);font-size:24px;color:var(--accent);font-weight:700}
+.mf .v.green{color:var(--green)}
+.shares-title{font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
+.share-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 12px;background:var(--s2);border-radius:4px;
+  margin-bottom:6px;gap:8px;flex-wrap:wrap;
+}
+.share-row .sh{font-size:10px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.share-row .su{font-size:11px;color:var(--cyan);white-space:nowrap}
+.share-row .st{font-size:10px;color:var(--muted);white-space:nowrap}
+
+/* ─── ADDRESS VIEW ─── */
+#addr-panel{display:none;animation:fadeUp .25s ease}
+.addr-header{
+  background:var(--s1);border:1px solid var(--border);border-radius:6px;
+  padding:20px 22px;margin-bottom:16px;
+}
+.addr-name{font-family:var(--display);font-size:32px;font-weight:800;color:#fff;margin-bottom:10px}
+.addr-stats{display:flex;gap:24px;flex-wrap:wrap}
+.addr-stat label{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:3px}
+.addr-stat .v{font-size:18px;color:var(--text)}
+.addr-stat .v.g{color:var(--green)}
+
+/* ─── PAGINATION ─── */
+.pagination{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:18px}
+.pg-btn{
+  background:var(--s1);border:1px solid var(--border);color:var(--muted);
+  font-family:var(--mono);font-size:11px;padding:7px 14px;border-radius:3px;
+  cursor:pointer;transition:all .2s;letter-spacing:1px;
+}
+.pg-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.pg-btn:disabled{opacity:.3;cursor:default}
+.pg-info{font-size:10px;color:var(--muted);letter-spacing:1px}
+
+/* ─── LOADING / EMPTY ─── */
+.ld{display:flex;align-items:center;justify-content:center;padding:50px;gap:10px;color:var(--muted);font-size:11px;letter-spacing:2px}
+.sp{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{padding:50px;text-align:center;font-size:10px;color:var(--muted);letter-spacing:2px}
+.err-msg{padding:12px 16px;background:rgba(255,61,90,.07);border:1px solid rgba(255,61,90,.2);border-radius:4px;color:var(--red);font-size:11px;margin-bottom:12px;display:none}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:700px){
+  .bt-head,.bt-row{grid-template-columns:70px 1fr 80px 100px}
+  .bt-head span:nth-child(4),.bt-row .bt-miner,
+  .bt-head span:nth-child(5),.bt-row .bt-time{display:none}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="logo-block">
+      <img src="/static/logo_nkl.png" style="height:48px;width:auto;margin-right:10px;">
+      <div>
+        <div class="logo-text">NKL EXPLORER</div>
+        <div class="logo-sub">Núcleo Block Explorer</div>
+      </div>
+    </div>
+    <div class="hdr-links">
+      <a href="https://pool.nucleonkl.com"  class="hdr-link">Pool</a>
+      <a href="/explorer"   class="hdr-link active">Explorer</a>
+      <a href="/withdrawals" class="hdr-link">Retiros</a>
+    </div>
+  </header>
+
+  <!-- SEARCH -->
+  <div style="margin-top:22px">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input id="search-input" type="text"
+        placeholder="Buscar por: número de bloque, hash (64 chars) o usuario...">
+      <button id="search-btn" onclick="doSearch()">BUSCAR</button>
+    </div>
+    
+  <button onclick="toggleDateSearch()" style="margin-top:8px;background:transparent;color:#00c9b1;border:1px solid #00c9b1;border-radius:6px;padding:6px 14px;font-size:11px;letter-spacing:1px;cursor:pointer">⏱ BUSCAR POR FECHA</button>
+  <div class="search-hint">Ej: 1024 &nbsp;|&nbsp; 0000a3f... &nbsp;|&nbsp; Carlos</div>
+  </div>
+
+  
+<div id="date-search-panel" style="margin-top:12px;background:#16161d;border:1px solid #2a2a35;border-radius:10px;padding:16px 20px;display:none">
+  <div style="font-size:11px;color:#00c9b1;letter-spacing:2px;margin-bottom:12px">BUSCAR POR RANGO DE FECHA Y HORA (ingresá hora UTC)</div><div style="font-size:10px;color:#fff;margin-top:4px;">⚠ Los bloques se generan cada ~9 minutos. Usá un rango mínimo de 15 minutos para asegurarte de encontrar resultados.</div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <label style="font-size:11px;color:#fff">DESDE</label>
+      <input id="date-from" type="text" placeholder="DD/MM/AAAA HH:MM" maxlength="16" oninput="maskDate(this)" style="background:#09090c;border:1px solid #2a2a35;border-radius:6px;padding:8px 12px;color:#fff;font-size:13px;width:160px;letter-spacing:1px">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <label style="font-size:11px;color:#fff">HASTA</label>
+      <input id="date-to" type="text" placeholder="DD/MM/AAAA HH:MM" maxlength="16" oninput="maskDate(this)" style="background:#09090c;border:1px solid #2a2a35;border-radius:6px;padding:8px 12px;color:#fff;font-size:13px;width:160px;letter-spacing:1px">
+    </div>
+    <button onclick="doDateSearch()" style="background:#e5ff00;color:#000;border:none;border-radius:6px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer">BUSCAR</button>
+    <button onclick="document.getElementById('date-search-panel').style.display='none'" style="background:transparent;color:#fff;border:1px solid #333;border-radius:6px;padding:9px 16px;font-size:12px;cursor:pointer">CERRAR</button>
+  </div>
+  <div id="date-result" style="margin-top:16px"></div>
+</div>
+
+<div id="err-banner" class="err-msg"></div>
+  <div id="search-result"></div>
+
+  <!-- STATS STRIP -->
+  <div class="stat-strip" id="stat-strip">
+    <div class="stat-item"><label>Bloques</label>     <div class="sv" id="ss-blocks">—</div></div>
+    <div class="stat-item"><label>Mineros</label>     <div class="sv" id="ss-miners">—</div></div>
+    <div class="stat-item"><label>Shares</label>      <div class="sv" id="ss-shares">—</div></div>
+    <div class="stat-item"><label>NKL Emitidos</label><div class="sv" id="ss-issued">—</div></div>
+    <div class="stat-item"><label>Bloque Actual</label><div class="sv" id="ss-cur">—</div><div class="ss" id="ss-diff">—</div></div>
+    <div class="stat-item"><label>Próximo Halving</label><div class="sv" id="ss-halving">—</div></div>
+  </div>
+
+  <!-- ADDRESS PANEL (se muestra al buscar usuario) -->
+  <div id="addr-panel">
+    <div class="sec"><span class="sec-title">Dirección</span><div class="sec-line"></div><span class="sec-extra" id="addr-back" style="cursor:pointer;color:var(--cyan)" onclick="hideAddr()">← Volver</span></div>
+    <div class="addr-header">
+      <div class="addr-name" id="addr-name">—</div>
+      <div class="addr-stats">
+        <div class="addr-stat"><label>Balance</label>       <div class="v g" id="addr-bal">—</div></div>
+        <div class="addr-stat"><label>Total Ganado</label>  <div class="v"   id="addr-earned">—</div></div>
+        <div class="addr-stat"><label>Bloques Encontrados</label><div class="v" id="addr-blocks">—</div></div>
+      </div>
+    </div>
+    <div class="blocks-table">
+      <div class="bt-head">
+        <span>BLOQUE</span><span>HASH</span><span>DIFIC.</span>
+        <span>REWARD</span><span>MINERO</span><span>HACE</span>
+      </div>
+      <div id="addr-shares"></div>
+    </div>
+  </div>
+
+  <!-- BLOCKS LIST -->
+  <div id="blocks-panel">
+    <div class="sec">
+      <span class="sec-title">Últimos Bloques</span>
+      <div class="sec-line"></div>
+      <span class="sec-extra" id="blocks-total">—</span>
+    </div>
+    <div class="blocks-table">
+      <div class="bt-head">
+        <span>BLOQUE</span><span>HASH PREVIO</span><span>DIFIC.</span>
+        <span>REWARD</span><span>MINERO</span><span>HACE</span>
+      </div>
+      <div id="blocks-body">
+        <div class="ld"><div class="sp"></div>CARGANDO CADENA</div>
+      </div>
+    </div>
+    <div class="pagination">
+      <button class="pg-btn" id="pg-prev" onclick="changePage(-1)" disabled>← ANTERIOR</button>
+      <span class="pg-info" id="pg-info">Página 1</span>
+      <button class="pg-btn" id="pg-next" onclick="changePage(1)">SIGUIENTE →</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL DETALLE DE BLOQUE -->
+<div id="modal-overlay" onclick="closeModal(event)">
+  <div id="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">BLOQUE #—</span>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <div class="ld"><div class="sp"></div>CARGANDO</div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentPage  = 1;
+let totalBlocks  = 0;
+const PAGE_SIZE  = 20;
+
+// ── UTILS ──
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function fmtNum(n){
+  if(n==null||isNaN(n))return'—';
+  if(n>=1e9)return(n/1e9).toFixed(2)+'B';
+  if(n>=1e6)return(n/1e6).toFixed(2)+'M';
+  if(n>=1e3)return(n/1e3).toFixed(1)+'K';
+  return Number(n).toLocaleString();
+}
+function timeAgo(ts){
+  if(!ts)return'—';
+  const d=Math.floor(Date.now()/1000)-ts;
+  if(d<60)  return d+'s';
+  if(d<3600)return Math.floor(d/60)+'m';
+  if(d<86400)return Math.floor(d/3600)+'h';
+  return Math.floor(d/86400)+'d';
+}
+function shortHash(h){return h?h.slice(0,12)+'…'+h.slice(-6):'—'}
+function showErr(msg){const b=document.getElementById('err-banner');b.textContent=msg;b.style.display='block';setTimeout(()=>b.style.display='none',4000)}
+
+// ── STATS STRIP ──
+async function loadStats(){
+  try{
+    const d=await fetch('/stats/pool').then(r=>r.json());
+    if(d.status!=='ok')return;
+    document.getElementById('ss-blocks').textContent  = fmtNum(d.blocks_solved);
+    document.getElementById('ss-miners').textContent  = fmtNum(d.active_miners);
+    document.getElementById('ss-shares').textContent  = fmtNum(d.total_shares);
+    document.getElementById('ss-issued').textContent  = fmtNum(d.total_issued_nkl);
+    const cb=d.current_block||{};
+    document.getElementById('ss-cur').textContent     = cb.index?'#'+cb.index.toLocaleString():'—';
+    document.getElementById('ss-diff').textContent    = cb.difficulty?'dif. '+cb.difficulty:'—';
+    document.getElementById('ss-halving').textContent = d.next_halving_block?'#'+d.next_halving_block.toLocaleString():'—';
+  }catch(e){console.error(e)}
+}
+
+// ── BLOCKS LIST ──
+async function loadBlocks(page=1){
+  const body=document.getElementById('blocks-body');
+  body.innerHTML='<div class="ld"><div class="sp"></div>CARGANDO</div>';
+  try{
+    const d=await fetch(`/explorer/blocks?page=${page}&limit=${PAGE_SIZE}`).then(r=>r.json());
+    if(d.status!=='ok'){body.innerHTML='<div class="empty">ERROR AL CARGAR</div>';return}
+    totalBlocks=d.total;
+    document.getElementById('blocks-total').textContent=d.total.toLocaleString()+' bloques totales';
+    document.getElementById('pg-info').textContent=`Pág. ${page} / ${Math.ceil(d.total/PAGE_SIZE)||1}`;
+    document.getElementById('pg-prev').disabled=(page<=1);
+    document.getElementById('pg-next').disabled=(page>=Math.ceil(d.total/PAGE_SIZE));
+
+    if(!d.blocks.length){body.innerHTML='<div class="empty">SIN BLOQUES AÚN</div>';return}
+    body.innerHTML=d.blocks.map(b=>`
+      <div class="bt-row" onclick="openBlock(${b.index_})">
+        <div class="bt-index">#${b.index_.toLocaleString()}</div>
+        <div class="bt-hash">${esc(shortHash(b.previous_hash))}</div>
+        <div class="bt-diff">${b.difficulty}</div>
+        <div class="bt-reward">${Number(b.reward).toLocaleString()} NKL</div>
+        <div class="bt-miner">${esc(b.solved_by||'—')}</div>
+        <div class="bt-time">${timeAgo(b.solved_at)}</div>
+      </div>`).join('');
+  }catch(e){body.innerHTML='<div class="empty">ERROR DE CONEXIÓN</div>'}
+}
+
+function changePage(d){
+  currentPage=Math.max(1,currentPage+d);
+  loadBlocks(currentPage);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── BLOCK MODAL ──
+async function openBlock(index){
+  document.getElementById('modal-title').textContent='BLOQUE #'+index.toLocaleString();
+  document.getElementById('modal-body').innerHTML='<div class="ld"><div class="sp"></div>CARGANDO</div>';
+  document.getElementById('modal-overlay').classList.add('open');
+  try{
+    const d=await fetch(`/explorer/block/${index}`).then(r=>r.json());
+    if(d.status!=='ok'){document.getElementById('modal-body').innerHTML='<div class="empty">ERROR</div>';return}
+    const b=d.block;
+    const solveTime=b.solve_time?`${b.solve_time}s`:'—';
+    document.getElementById('modal-body').innerHTML=`
+      <div class="modal-grid">
+        <div class="mf"><label>Índice</label><div class="v big">#${b.index_.toLocaleString()}</div></div>
+        <div class="mf"><label>Resuelto por</label><div class="v" style="color:var(--cyan);font-size:15px">${esc(b.solved_by||'—')}</div></div>
+        <div class="mf"><label>Recompensa</label><div class="v green">${Number(b.reward).toLocaleString()} NKL</div></div>
+        <div class="mf"><label>Dificultad</label><div class="v">${b.difficulty} ceros hex</div></div>
+        <div class="mf"><label>Tiempo de resolución</label><div class="v">${solveTime}</div></div>
+          <div class="mf"><label>Resuelto</label><div class="v">${b.solved_at?utcStr(b.solved_at):'-'}</div></div>
+        <div class="mf" style="grid-column:1/-1"><label>Hash anterior (encadenado)</label><div class="v" style="font-size:10px;color:var(--muted)">${esc(b.previous_hash)}</div></div>
+      </div>
+      <div class="shares-title">SHARES REGISTRADOS — ${d.shares.length} total</div>
+      ${d.shares.length?d.shares.map(s=>`
+        <div class="share-row">
+          <div class="sh">${esc(s.hash)}</div>
+          <div class="su">${esc(s.username)}</div>
+          <div class="st">${utcStr(s.submitted_at).slice(11,16)}</div>
+        </div>`).join(''):'<div class="empty" style="padding:20px">Sin shares registrados</div>'}
+    `;
+  }catch(e){document.getElementById('modal-body').innerHTML='<div class="empty">ERROR DE CONEXIÓN</div>'}
+}
+function closeModal(e){if(e.target===document.getElementById('modal-overlay'))closeModalDirect()}
+function closeModalDirect(){document.getElementById('modal-overlay').classList.remove('open')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModalDirect()})
+
+// ── SEARCH ──
+async function doSearch(){
+  const q=document.getElementById('search-input').value.trim();
+  if(!q)return;
+  const panel=document.getElementById('search-result');
+  panel.style.display='block';
+  panel.innerHTML='<div class="ld"><div class="sp"></div>BUSCANDO</div>';
+
+  try{
+    const d=await fetch(`/explorer/search?q=${encodeURIComponent(q)}`).then(r=>r.json());
+    if(d.status==='error'){
+      panel.innerHTML=`<div class="sr-type" style="color:var(--red)">SIN RESULTADOS</div><div style="font-size:11px;color:var(--muted)">No se encontró "${esc(q)}"</div>`;
+      return;
+    }
+    if(d.type==='block'){
+      const b=d.data;
+      panel.innerHTML=`
+        <div class="sr-type">BLOQUE ENCONTRADO</div>
+        <div class="sr-grid">
+          <div class="sr-field"><label>Índice</label><div class="v hi">#${b.index_.toLocaleString()}</div></div>
+          <div class="sr-field"><label>Resuelto por</label><div class="v link" onclick="searchUser('${esc(b.solved_by||'')}')">${esc(b.solved_by||'—')}</div></div>
+          <div class="sr-field"><label>Recompensa</label><div class="v">${Number(b.reward).toLocaleString()} NKL</div></div>
+          <div class="sr-field"><label>Dificultad</label><div class="v">${b.difficulty}</div></div>
+        </div>
+        <button onclick="openBlock(${b.index_})" style="margin-top:14px;background:var(--accent);color:#000;border:none;padding:8px 18px;font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:1px;cursor:pointer;border-radius:3px">VER DETALLE COMPLETO</button>
+      `;
+    } else if(d.type==='tx'){
+      const s=d.data;
+      panel.innerHTML=`
+        <div class="sr-type">TRANSACCIÓN ENCONTRADA</div>
+        <div class="sr-grid">
+          <div class="sr-field"><label>Usuario</label><div class="v link" onclick="searchUser('${esc(s.username)}')">${esc(s.username)}</div></div>
+          <div class="sr-field"><label>Bloque</label><div class="v link" onclick="openBlock(${s.block_index})">#${s.block_index}</div></div>
+          <div class="sr-field"><label>Reward</label><div class="v">${Number(s.reward).toLocaleString()} NKL</div></div>
+          <div class="sr-field"><label>Fecha</label><div class="v">${utcStr(s.submitted_at)}</div></div>
+          <div class="sr-field" style="grid-column:1/-1"><label>Hash</label><div class="v" style="font-size:10px;color:var(--muted)">${esc(s.hash)}</div></div>
+        </div>
+      `;
+    } else if(d.type==='address'){
+      panel.style.display='none';
+      showAddressPanel(d.username);
+    }
+  }catch(e){
+    panel.innerHTML='<div class="sr-type" style="color:var(--red)">ERROR DE CONEXIÓN</div>';
+  }
+}
+
+function searchUser(u){
+  if(!u)return;
+  document.getElementById('search-result').style.display='none';
+  showAddressPanel(u);
+}
+
+// ── ADDRESS PANEL ──
+async function showAddressPanel(username){
+  document.getElementById('blocks-panel').style.display='none';
+  const ap=document.getElementById('addr-panel');
+  ap.style.display='block';
+  document.getElementById('addr-name').textContent=username;
+  document.getElementById('addr-shares').innerHTML='<div class="ld"><div class="sp"></div>CARGANDO</div>';
+
+  try{
+    const d=await fetch(`/explorer/address/${encodeURIComponent(username)}`).then(r=>r.json());
+    if(d.status!=='ok'){showErr('Usuario no encontrado');hideAddr();return}
+    document.getElementById('addr-bal').textContent    = Number(d.balance).toLocaleString()+' NKL';
+    document.getElementById('addr-earned').textContent = Number(d.total_earned).toLocaleString()+' NKL';
+    document.getElementById('addr-blocks').textContent = d.blocks_found;
+
+    if(!d.recent_shares.length){
+      document.getElementById('addr-shares').innerHTML='<div class="empty">SIN ACTIVIDAD REGISTRADA</div>';
+      return;
+    }
+    document.getElementById('addr-shares').innerHTML=d.recent_shares.map(s=>`
+      <div class="bt-row" onclick="openBlock(${s.block_index})">
+        <div class="bt-index">#${s.block_index.toLocaleString()}</div>
+        <div class="bt-hash">${esc(shortHash(s.hash))}</div>
+        <div class="bt-diff">—</div>
+        <div class="bt-reward">${Number(s.reward).toLocaleString()} NKL</div>
+        <div class="bt-miner" style="color:var(--accent)">${esc(username)}</div>
+        <div class="bt-time">${timeAgo(s.submitted_at)}</div>
+      </div>`).join('');
+  }catch(e){showErr('Error de conexión')}
+}
+
+function hideAddr(){
+  document.getElementById('addr-panel').style.display='none';
+  document.getElementById('blocks-panel').style.display='block';
+}
+
+// Enter en el search
+document.getElementById('search-input').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch()});
+
+// ── INIT ──
+loadStats();
+loadBlocks(1);
+setInterval(loadStats,15000);
+
+function maskDate(el){
+  let v=el.value.replace(/[^0-9]/g,'');
+  let out='';
+  if(v.length>0) out+=v.substring(0,2);
+  if(v.length>=3) out+='/'+v.substring(2,4);
+  if(v.length>=5) out+='/'+v.substring(4,8);
+  if(v.length>=9) out+=' '+v.substring(8,10);
+  if(v.length>=11) out+=':'+v.substring(10,12);
+  el.value=out;
+}
+function toggleDateSearch(){
+  const p=document.getElementById('date-search-panel');
+  if(p) p.style.display=p.style.display==='none'?'block':'none';
+}
+function utcStr(ts){
+  const d=new Date(ts*1000);
+  const pad=n=>String(n).padStart(2,'0');
+  return d.getUTCFullYear()+'/'+pad(d.getUTCMonth()+1)+'/'+pad(d.getUTCDate())+' '+pad(d.getUTCHours())+':'+pad(d.getUTCMinutes())+' UTC';
+}
+async function doDateSearch(){
+  const from=document.getElementById('date-from').value;
+  const to=document.getElementById('date-to').value;
+  const result=document.getElementById('date-result');
+  if(!from){result.innerHTML='<div style="color:#ff6b6b;font-size:13px">Selecciona la fecha de inicio</div>';return;}
+  // Convertir DD/MM/YYYY HH:MM a YYYY-MM-DD HH:MM
+  function convertDate(s){
+    if(!s) return '';
+    const [datePart, timePart] = s.split(' ');
+    const [d,m,y] = datePart.split('/');
+    const [hh,mm] = (timePart||'00:00').split(':').map(Number);
+    const dt = new Date(Date.UTC(Number(y),Number(m)-1,Number(d),hh,mm));
+    const pad=n=>String(n).padStart(2,'0');
+    return dt.getUTCFullYear()+'-'+pad(dt.getUTCMonth()+1)+'-'+pad(dt.getUTCDate())+' '+pad(dt.getUTCHours())+':'+pad(dt.getUTCMinutes());
+  }
+  const fmtFrom=convertDate(from);
+  const fmtTo=convertDate(to);
+  result.innerHTML='<div style="color:#fff;font-size:13px">Buscando...</div>';
+  try{
+    const url='/explorer/search/date?from='+encodeURIComponent(fmtFrom)+(fmtTo?'&to='+encodeURIComponent(fmtTo):'');
+    const d=await fetch(url).then(r=>r.json());
+    if(d.status!=='ok'){result.innerHTML='<div style="color:#ff6b6b;font-size:13px">'+d.message+'</div>';return;}
+    if(d.count===0){result.innerHTML='<div style="color:#fff;font-size:13px">No se encontraron bloques en ese rango</div>';return;}
+    let html='<div style="font-size:11px;color:#00c9b1;margin-bottom:10px">'+d.count+' BLOQUES ENCONTRADOS</div>';
+    html+='<table style="width:100%;border-collapse:collapse;font-size:12px">';
+    html+='<tr style="color:#fff;border-bottom:1px solid #333"><th style="text-align:left;padding:6px">BLOQUE</th><th style="text-align:left;padding:6px">MINERO</th><th style="text-align:right;padding:6px">REWARD</th><th style="text-align:right;padding:6px">FECHA/HORA (UTC)</th></tr>';
+    d.blocks.forEach(b=>{
+        const dt=utcStr(b.solved_at);
+      html+='<tr style="border-bottom:1px solid #222;cursor:pointer" onclick="openBlock('+b.index_+')"><td style="padding:6px;color:#e5ff00">#'+b.index_+'</td><td style="padding:6px">'+b.solved_by+'</td><td style="padding:6px;text-align:right">'+Number(b.reward).toLocaleString("es-AR",{maximumFractionDigits:0})+' NKL</td><td style="padding:6px;text-align:right;color:#fff">'+utcStr(b.solved_at)+'</td></tr>';
+    });
+    html+='</table>';
+    result.innerHTML=html;
+  }catch(e){result.innerHTML='<div style="color:#ff6b6b;font-size:13px">Error de conexion</div>';}
+}
+
+</script>
+</body>
+</html>

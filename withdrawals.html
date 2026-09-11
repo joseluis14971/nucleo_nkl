@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NKL — Retiros</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Barlow+Condensed:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04080c;--s1:#080f16;--s2:#0c1620;--border:#132030;--b2:#1c3048;
+  --accent:#e8f400;--cyan:#00cfff;--orange:#ff6b00;--green:#00e87a;--red:#ff3d5a;
+  --text:#b8d0e0;--muted:#3a5570;
+  --mono:'IBM Plex Mono',monospace;--display:'Barlow Condensed',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;min-height:100vh}
+body::after{content:'';position:fixed;top:0;left:0;right:0;height:2px;z-index:100;background:linear-gradient(90deg,transparent,var(--accent),var(--cyan),transparent)}
+.page{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 20px 80px}
+
+header{display:flex;align-items:center;justify-content:space-between;padding:24px 0 16px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:12px}
+.logo-block{display:flex;align-items:center;gap:14px}
+.logo-hex{width:40px;height:40px;background:var(--accent);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:15px;font-weight:800;color:#000}
+.logo-text{font-family:var(--display);font-size:24px;font-weight:800;letter-spacing:2px;color:#fff}
+.logo-sub{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-top:2px}
+.hdr-links{display:flex;gap:8px}
+.hdr-link{font-size:10px;letter-spacing:1px;color:var(--muted);border:1px solid var(--border);border-radius:3px;padding:5px 12px;text-decoration:none;transition:all .2s;text-transform:uppercase}
+.hdr-link:hover{color:var(--accent);border-color:var(--accent)}
+.hdr-link.active{color:var(--bg);background:var(--accent);border-color:var(--accent)}
+
+/* LOGIN */
+#login-panel{max-width:460px;margin:50px auto 0;animation:fadeUp .3s ease}
+.login-title{font-family:var(--display);font-size:28px;font-weight:800;color:#fff;letter-spacing:2px;margin-bottom:6px}
+.login-sub{font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:28px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+.field input,.field select{width:100%;background:var(--s1);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:13px;padding:12px 14px;border-radius:4px;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+.field select option{background:var(--s1)}
+.btn-primary{width:100%;background:var(--accent);border:none;color:#000;font-family:var(--display);font-size:15px;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:13px;border-radius:4px;cursor:pointer;transition:opacity .2s;margin-top:4px}
+.btn-primary:hover{opacity:.88}
+.btn-secondary{background:transparent;border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:11px;padding:8px 16px;border-radius:4px;cursor:pointer;transition:all .2s;letter-spacing:1px}
+.btn-secondary:hover{border-color:var(--red);color:var(--red)}
+
+/* MAIN */
+#main-panel{display:none;animation:fadeUp .3s ease}
+
+/* BALANCE CARD */
+.balance-card{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:22px 24px;margin:24px 0 20px;position:relative;overflow:hidden}
+.balance-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),transparent)}
+.bc-label{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+.bc-amount{font-family:var(--display);font-size:46px;font-weight:800;color:var(--green);line-height:1}
+.bc-symbol{font-size:14px;color:var(--muted);margin-top:2px}
+.bc-user{position:absolute;top:20px;right:20px;font-size:11px;color:var(--muted)}
+.bc-user span{color:var(--cyan)}
+.bc-logout{position:absolute;bottom:20px;right:20px}
+
+/* WITHDRAW FORM */
+.withdraw-form{background:var(--s1);border:1px solid var(--b2);border-radius:8px;padding:22px 24px;margin-bottom:20px}
+.wf-title{font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:2px;color:#fff;margin-bottom:4px;text-transform:uppercase}
+.wf-sub{font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:18px}
+
+.notice{background:rgba(232,244,0,.05);border:1px solid rgba(232,244,0,.15);border-radius:4px;padding:12px 14px;font-size:10px;color:rgba(232,244,0,.8);letter-spacing:.5px;margin-bottom:18px;line-height:1.8}
+.notice strong{color:var(--accent)}
+
+.networks-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:18px}
+.net-btn{background:var(--s2);border:2px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:10px;padding:10px 8px;border-radius:4px;cursor:pointer;transition:all .2s;text-align:center;letter-spacing:1px}
+.net-btn:hover{border-color:var(--accent);color:var(--accent)}
+.net-btn.selected{border-color:var(--accent);color:var(--accent);background:rgba(232,244,0,.06)}
+.net-label{font-size:9px;color:var(--muted);display:block;margin-top:3px}
+
+.wf-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:500px){.wf-row{grid-template-columns:1fr}}
+
+.fee-preview{background:var(--s2);border:1px solid var(--border);border-radius:4px;padding:10px 14px;font-size:11px;color:var(--muted);display:none;margin-top:10px}
+.fee-preview .fp-row{display:flex;justify-content:space-between;padding:2px 0}
+.fee-preview .fp-net{color:var(--green);font-size:13px;font-weight:500}
+
+/* STATUS BADGES */
+.badge{display:inline-block;font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:3px}
+.badge-pending  {background:rgba(255,107,0,.12);color:var(--orange);border:1px solid rgba(255,107,0,.25)}
+.badge-completed{background:rgba(0,232,122,.1); color:var(--green); border:1px solid rgba(0,232,122,.2)}
+.badge-cancelled{background:rgba(58,85,112,.2); color:var(--muted); border:1px solid var(--border)}
+.badge-rejected {background:rgba(255,61,90,.1); color:var(--red);   border:1px solid rgba(255,61,90,.2)}
+
+/* HISTORIAL */
+.sec{display:flex;align-items:center;gap:12px;margin:24px 0 14px}
+.sec-title{font-family:var(--display);font-size:14px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#fff;white-space:nowrap}
+.sec-line{flex:1;height:1px;background:var(--border)}
+
+.hist-wrap{background:var(--s1);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.ht-head{display:grid;grid-template-columns:50px 1fr 120px 90px 80px;background:var(--s2);border-bottom:1px solid var(--border);padding:10px 16px;gap:8px}
+.ht-head span{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.ht-row{display:grid;grid-template-columns:50px 1fr 120px 90px 80px;padding:13px 16px;gap:8px;border-bottom:1px solid rgba(19,32,48,.8);align-items:center}
+.ht-row:last-child{border-bottom:none}
+.ht-id{font-size:10px;color:var(--muted)}
+.ht-info{font-size:11px}
+.ht-wallet{color:var(--text);margin-bottom:2px;word-break:break-all}
+.ht-network{font-size:9px;color:var(--muted);letter-spacing:1px}
+.ht-amount{font-size:12px;color:var(--green)}
+.ht-date{font-size:9px;color:var(--muted)}
+.ht-cancel button{background:transparent;border:1px solid rgba(255,61,90,.3);color:var(--red);font-family:var(--mono);font-size:9px;padding:4px 8px;border-radius:3px;cursor:pointer;transition:all .2s;letter-spacing:1px}
+.ht-cancel button:hover{background:rgba(255,61,90,.1)}
+
+.tx-detail{background:var(--s2);border-top:1px solid var(--border);padding:10px 16px;font-size:10px}
+.tx-detail .tx-hash{color:var(--cyan);word-break:break-all;margin-top:3px}
+.tx-detail .tx-note{color:var(--muted);margin-top:3px;font-style:italic}
+
+/* ALERTS */
+.alert{padding:12px 16px;border-radius:4px;font-size:11px;margin-bottom:14px;display:none;letter-spacing:.5px;line-height:1.5}
+.alert-ok {background:rgba(0,232,122,.08);border:1px solid rgba(0,232,122,.2);color:var(--green)}
+.alert-err{background:rgba(255,61,90,.08);border:1px solid rgba(255,61,90,.2);color:var(--red)}
+
+.ld{display:flex;align-items:center;justify-content:center;padding:40px;gap:10px;color:var(--muted);font-size:11px;letter-spacing:2px}
+.sp{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{padding:40px;text-align:center;font-size:10px;color:var(--muted);letter-spacing:2px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:600px){
+  .ht-head,.ht-row{grid-template-columns:40px 1fr 90px 70px}
+  .ht-head span:last-child,.ht-cancel{display:none}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="logo-block">
+    <div class="logo-hex">N</div>
+    <div>
+      <div class="logo-text">NKL RETIROS</div>
+      <div class="logo-sub">Withdrawal Portal</div>
+    </div>
+  </div>
+  <div class="hdr-links">
+    <a href="/dashboard"   class="hdr-link">Pool</a>
+    <a href="/explorer"    class="hdr-link">Explorer</a>
+    <a href="/withdrawals" class="hdr-link active">Retiros</a>
+  </div>
+</header>
+
+<!-- LOGIN -->
+<div id="login-panel">
+  <div class="login-title">ACCEDER</div>
+  <div class="login-sub">Ingresa con tu usuario y API key para gestionar tus retiros</div>
+  <div id="login-alert" class="alert alert-err"></div>
+  <div class="field">
+    <label>Usuario</label>
+    <input id="l-user" type="text" placeholder="tu_usuario" autocomplete="username">
+  </div>
+  <div class="field">
+    <label>API Key</label>
+    <input id="l-key" type="password" placeholder="tu api key (del archivo mi_wallet_nkl.json)">
+  </div>
+  <button class="btn-primary" onclick="doLogin()">INGRESAR</button>
+  <p style="font-size:10px;color:var(--muted);margin-top:14px;line-height:1.6;letter-spacing:.5px">
+    Tu API key se genero cuando ejecutaste el minero por primera vez.<br>
+    Esta guardada en el archivo <strong style="color:var(--accent)">mi_wallet_nkl.json</strong>
+  </p>
+</div>
+
+<!-- MAIN -->
+<div id="main-panel">
+
+  <div class="balance-card">
+    <div class="bc-user">Minero: <span id="bc-username">-</span></div>
+    <div class="bc-label">Balance disponible para retirar</div>
+    <div class="bc-amount" id="bc-amount">0.00</div>
+    <div class="bc-symbol">NKL</div>
+    <div class="bc-logout">
+      <button class="btn-secondary" onclick="doLogout()">CERRAR SESION</button>
+    </div>
+  </div>
+
+  <div id="alert-ok"  class="alert alert-ok"></div>
+  <div id="alert-err" class="alert alert-err"></div>
+
+  <!-- FORMULARIO DE RETIRO -->
+  <div class="withdraw-form">
+    <div class="wf-title">Solicitar Retiro</div>
+    <div class="wf-sub">Minimo 1,000 NKL · Comision de red 0.5% · Procesado manualmente</div>
+
+    <div class="notice">
+      <strong>Como funciona:</strong><br>
+      1. Ingresa tu wallet de destino y el monto<br>
+      2. El administrador enviara los NKL a tu wallet<br>
+      3. Veras el TX hash cuando sea procesado<br>
+      Compatible con MetaMask, Trust Wallet, y cualquier wallet compatible con la red elegida
+    </div>
+
+    <!-- SELECTOR DE RED -->
+    <div class="field">
+      <label>Red de destino</label>
+      <div class="networks-grid">
+        <div class="net-btn selected" data-net="BSC" onclick="selectNetwork('BSC')">
+          BNB Chain<span class="net-label">BSC / BEP-20</span>
+        </div>
+        <div class="net-btn" data-net="ETH" onclick="selectNetwork('ETH')">
+          Ethereum<span class="net-label">ETH / ERC-20</span>
+        </div>
+        <div class="net-btn" data-net="POLYGON" onclick="selectNetwork('POLYGON')">
+          Polygon<span class="net-label">MATIC</span>
+        </div>
+        <div class="net-btn" data-net="ARBITRUM" onclick="selectNetwork('ARBITRUM')">
+          Arbitrum<span class="net-label">ARB</span>
+        </div>
+        <div class="net-btn" data-net="SOLANA" onclick="selectNetwork('SOLANA')">
+          Solana<span class="net-label">SOL</span>
+        </div>
+        <div class="net-btn" data-net="OTHER" onclick="selectNetwork('OTHER')">
+          Otra red<span class="net-label">Especificar</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="wf-row">
+      <div class="field">
+        <label>Monto a retirar (NKL)</label>
+        <input id="w-amount" type="number" min="1000" step="1"
+               placeholder="ej: 50000" oninput="updatePreview()">
+      </div>
+      <div class="field">
+        <label>Direccion de wallet destino</label>
+        <input id="w-addr" type="text"
+               placeholder="0x... o tu direccion de wallet">
+      </div>
+    </div>
+
+    <!-- PREVIEW DE FEE -->
+    <div class="fee-preview" id="fee-preview">
+      <div class="fp-row"><span>Monto bruto:</span>    <span id="fp-gross">-</span></div>
+      <div class="fp-row"><span>Fee 0.5%:</span>       <span id="fp-fee" style="color:var(--orange)">-</span></div>
+      <div class="fp-row"><span>Recibes:</span>        <span class="fp-net" id="fp-net">-</span></div>
+      <div class="fp-row"><span>Red:</span>            <span id="fp-net2" style="color:var(--cyan)">-</span></div>
+    </div>
+
+    <button class="btn-primary" style="margin-top:16px" onclick="doWithdraw()">
+      SOLICITAR RETIRO
+    </button>
+  </div>
+
+  <!-- HISTORIAL -->
+  <div class="sec"><span class="sec-title">Historial de Retiros</span><div class="sec-line"></div></div>
+  <div class="hist-wrap">
+    <div class="ht-head">
+      <span>ID</span><span>DESTINO</span><span>MONTO NETO</span>
+      <span>ESTADO</span><span>ACCION</span>
+    </div>
+    <div id="hist-body">
+      <div class="ld"><div class="sp"></div>CARGANDO</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+let SESSION = {username:null, apiKey:null};
+let selectedNetwork = 'BSC';
+
+function showAlert(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',6000)}
+function hideAlerts(){['alert-ok','alert-err','login-alert'].forEach(id=>document.getElementById(id).style.display='none')}
+function fmtDate(ts){if(!ts)return'-';return new Date(ts*1000).toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}
+function shortAddr(a){if(!a||a.length<=16)return a;return a.slice(0,8)+'...'+a.slice(-6)}
+
+function selectNetwork(net){
+  selectedNetwork=net;
+  document.querySelectorAll('.net-btn').forEach(b=>{
+    b.classList.toggle('selected', b.dataset.net===net);
+  });
+  updatePreview();
+  document.getElementById('fp-net2').textContent=net;
+}
+
+function updatePreview(){
+  const amount=parseFloat(document.getElementById('w-amount').value)||0;
+  const prev=document.getElementById('fee-preview');
+  if(amount>=1000){
+    const fee=amount*0.005;
+    const net=amount-fee;
+    document.getElementById('fp-gross').textContent=amount.toLocaleString()+' NKL';
+    document.getElementById('fp-fee').textContent=fee.toFixed(4)+' NKL';
+    document.getElementById('fp-net').textContent=net.toLocaleString(undefined,{minimumFractionDigits:4})+' NKL';
+    document.getElementById('fp-net2').textContent=selectedNetwork;
+    prev.style.display='block';
+  } else {
+    prev.style.display='none';
+  }
+}
+
+// ── AUTH ──
+function loadSession(){
+  try{const s=localStorage.getItem('nkl_session');if(s){SESSION=JSON.parse(s);return !!(SESSION.username&&SESSION.apiKey);}}catch(e){}
+  return false;
+}
+function saveSession(){localStorage.setItem('nkl_session',JSON.stringify(SESSION))}
+function clearSession(){localStorage.removeItem('nkl_session');SESSION={username:null,apiKey:null}}
+
+async function doLogin(){
+  const user=document.getElementById('l-user').value.trim();
+  const key =document.getElementById('l-key').value.trim();
+  hideAlerts();
+  if(!user||!key){showAlert('login-alert','Ingresa tu usuario y API key');return}
+  try{
+    const r=await fetch('/stats/me',{headers:{'X-API-Key':key}});
+    const d=await r.json();
+    if(d.status==='ok'&&d.username===user){
+      SESSION={username:user,apiKey:key};
+      saveSession();
+      showMain(d);
+    } else {
+      showAlert('login-alert','Usuario o API key incorrectos');
+    }
+  }catch(e){showAlert('login-alert','Error de conexion')}
+}
+
+function doLogout(){
+  clearSession();
+  document.getElementById('main-panel').style.display='none';
+  document.getElementById('login-panel').style.display='block';
+}
+
+function showMain(d){
+  document.getElementById('login-panel').style.display='none';
+  document.getElementById('main-panel').style.display='block';
+  document.getElementById('bc-username').textContent=SESSION.username;
+  updateBalance(d.balance);
+  loadHistory();
+}
+
+function updateBalance(bal){
+  document.getElementById('bc-amount').textContent=
+    Number(bal||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:5});
+}
+
+async function refreshBalance(){
+  try{
+    const d=await fetch('/stats/me',{headers:{'X-API-Key':SESSION.apiKey}}).then(r=>r.json());
+    if(d.status==='ok') updateBalance(d.balance);
+  }catch(e){}
+}
+
+// ── RETIRO ──
+async function doWithdraw(){
+  hideAlerts();
+  const amount=parseFloat(document.getElementById('w-amount').value);
+  const addr  =document.getElementById('w-addr').value.trim();
+
+  if(!amount||amount<1000){showAlert('alert-err','Minimo 1,000 NKL para retirar');return}
+  if(!addr||addr.length<10){showAlert('alert-err','Ingresa una direccion de wallet valida');return}
+
+  try{
+    const r=await fetch('/withdrawal/request',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-API-Key':SESSION.apiKey},
+      body:JSON.stringify({amount:amount,wallet_address:addr,network:selectedNetwork})
+    });
+    const d=await r.json();
+    if(d.status==='ok'){
+      showAlert('alert-ok',
+        'Retiro solicitado correctamente.\n' +
+        'Monto: '+Number(d.amount_nkl).toLocaleString()+' NKL | ' +
+        'Fee: '+Number(d.fee_nkl).toFixed(4)+' NKL | '+
+        'Recibiras: '+Number(d.net_nkl).toLocaleString()+' NKL en '+d.network
+      );
+      document.getElementById('w-amount').value='';
+      document.getElementById('w-addr').value='';
+      document.getElementById('fee-preview').style.display='none';
+      refreshBalance();
+      loadHistory();
+    } else {
+      showAlert('alert-err', d.message||'Error al solicitar retiro');
+    }
+  }catch(e){showAlert('alert-err','Error de conexion')}
+}
+
+// ── CANCELAR ──
+async function cancelWithdrawal(id){
+  if(!confirm('Cancelar este retiro? El saldo neto sera devuelto a tu cuenta.'))return;
+  try{
+    const r=await fetch(`/withdrawal/cancel/${id}`,{
+      method:'POST',headers:{'X-API-Key':SESSION.apiKey}
+    });
+    const d=await r.json();
+    if(d.status==='ok'){
+      showAlert('alert-ok','Retiro cancelado. Saldo devuelto.');
+      refreshBalance();loadHistory();
+    } else {
+      showAlert('alert-err',d.message||'Error al cancelar');
+    }
+  }catch(e){showAlert('alert-err','Error de conexion')}
+}
+
+// ── HISTORIAL ──
+async function loadHistory(){
+  const body=document.getElementById('hist-body');
+  try{
+    const d=await fetch('/withdrawal/history',{
+      headers:{'X-API-Key':SESSION.apiKey}
+    }).then(r=>r.json());
+
+    if(!d.withdrawals||!d.withdrawals.length){
+      body.innerHTML='<div class="empty">SIN RETIROS REGISTRADOS</div>';
+      return;
+    }
+
+    body.innerHTML=d.withdrawals.map(w=>{
+      const badge=`<span class="badge badge-${w.status}">${w.status}</span>`;
+      const canCancel=w.status==='pending';
+
+      let txDetail='';
+      if(w.tx_hash){
+        txDetail=`<div class="tx-detail">
+          TX Hash: <div class="tx-hash">${w.tx_hash}</div>
+          ${w.admin_note?`<div class="tx-note">${w.admin_note}</div>`:''}
+        </div>`;
+      }
+      if(w.status==='rejected'&&w.admin_note){
+        txDetail=`<div class="tx-detail"><div class="tx-note">Motivo: ${w.admin_note}</div></div>`;
+      }
+
+      return `
+        <div>
+          <div class="ht-row">
+            <div class="ht-id">#${w.id}</div>
+            <div class="ht-info">
+              <div class="ht-wallet">${shortAddr(w.wallet_address)}</div>
+              <div class="ht-network">${w.network} &bull; ${fmtDate(w.requested_at)}</div>
+            </div>
+            <div class="ht-amount">
+              ${Number(w.net_nkl).toLocaleString(undefined,{minimumFractionDigits:2})} NKL
+              <div style="font-size:9px;color:var(--muted)">fee: ${Number(w.fee_nkl).toFixed(4)}</div>
+            </div>
+            <div>${badge}</div>
+            <div class="ht-cancel">${canCancel?`<button onclick="cancelWithdrawal(${w.id})">CANCELAR</button>`:''}</div>
+          </div>
+          ${txDetail}
+        </div>`;
+    }).join('');
+  }catch(e){
+    body.innerHTML='<div class="empty" style="color:var(--red)">ERROR DE CONEXION</div>';
+  }
+}
+
+// ── INIT ──
+document.getElementById('l-user').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+document.getElementById('l-key' ).addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+
+if(loadSession()&&SESSION.username&&SESSION.apiKey){
+  fetch('/stats/me',{headers:{'X-API-Key':SESSION.apiKey}})
+    .then(r=>r.json())
+    .then(d=>{if(d.status==='ok')showMain(d);else clearSession();})
+    .catch(()=>{});
+}
+</script>
+</body>
+</html>

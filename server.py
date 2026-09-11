@@ -830,6 +830,7 @@ def submit_share():
         " VALUES (?,?,?,?,0.0,?)",
         (username, str(nonce), hash_result, block_index, int(time.time()))
     )
+    db.execute("UPDATE miners SET total_shares_lifetime=total_shares_lifetime+1 WHERE username=?", (username,))
     db.commit()
     return jsonify({"status":"ok","partial":True})
 
@@ -893,6 +894,7 @@ def submit_solution():
             " VALUES (?,?,?,?,?,?)",
             (username, str(nonce), hash_result, block_index, reward, now)
         )
+        db.execute("UPDATE miners SET total_shares_lifetime=total_shares_lifetime+1 WHERE username=?", (username,))
     else:
         # Actualizar el share parcial existente con el hash final
         db.execute(
@@ -945,7 +947,15 @@ def pool_stats():
     db            = get_db()
     total_shares  = db.execute("SELECT COUNT(*) FROM shares").fetchone()[0]
     active_miners = db.execute(
-        "SELECT COUNT(DISTINCT username) FROM shares"
+        "SELECT COUNT(DISTINCT username) FROM shares WHERE submitted_at > ?",
+        (int(time.time()) - 86400,)
+    ).fetchone()[0]
+    registered_miners = db.execute(
+        "SELECT COUNT(*) FROM miners WHERE COALESCE(is_system,0)=0"
+    ).fetchone()[0]
+    active_miners_72h = db.execute(
+        "SELECT COUNT(DISTINCT username) FROM shares WHERE submitted_at > ?",
+        (int(time.time()) - 259200,)
     ).fetchone()[0]
     blocks_solved = db.execute(
         "SELECT COUNT(*) FROM blocks WHERE solved_by IS NOT NULL"
@@ -962,6 +972,8 @@ def pool_stats():
         "status":           "ok",
         "total_shares":     total_shares,
         "active_miners":    active_miners,
+        "registered_miners": registered_miners,
+        "active_miners_72h": active_miners_72h,
         "blocks_solved":    blocks_solved,
         "total_issued_nkl": round(total_issued, 2),
         "total_supply":     TOTAL_SUPPLY,
@@ -982,9 +994,10 @@ def leaderboard():
     db   = get_db()
     rows = db.execute("""
         SELECT b.username, b.balance,
-               COUNT(s.id)         AS shares,
+               COALESCE(m.total_shares_lifetime,0) AS shares,
                MAX(s.submitted_at) AS last_share
         FROM balances b
+        LEFT JOIN miners m ON m.username=b.username
         LEFT JOIN shares s ON s.username=b.username
         WHERE b.username NOT IN (?,?,?)
         GROUP BY b.username ORDER BY b.balance DESC LIMIT 50
@@ -1000,6 +1013,39 @@ def leaderboard():
         ]
     })
 
+@app.route("/stats/newest")
+def newest_miners():
+    db   = get_db()
+    rows = db.execute(
+        "SELECT username, created_at FROM miners"
+        " WHERE COALESCE(is_system,0)=0 AND COALESCE(banned,0)=0"
+        " ORDER BY created_at DESC LIMIT 5").fetchall()
+    return jsonify({"status": "ok",
+        "newest": [{"username": r["username"], "created_at": r["created_at"]} for r in rows]})
+
+@app.route("/stats/position")
+@require_api_key
+def my_position():
+    db   = get_db()
+    u    = request.miner_username
+    excl = (FOUNDER_USER, FEE_ACCOUNT, PREMINE_ACCOUNT)
+    me   = db.execute("SELECT balance FROM balances WHERE username=?", (u,)).fetchone()
+    my_bal = me["balance"] if me else 0.0
+    rank = db.execute(
+        "SELECT COUNT(*)+1 FROM balances WHERE balance > ? AND username NOT IN (?,?,?)",
+        (my_bal, *excl)).fetchone()[0]
+    total = db.execute(
+        "SELECT COUNT(*) FROM miners WHERE COALESCE(is_system,0)=0").fetchone()[0]
+    nxt = db.execute(
+        "SELECT username, balance FROM balances WHERE balance > ? AND username NOT IN (?,?,?)"
+        " ORDER BY balance ASC LIMIT 1", (my_bal, *excl)).fetchone()
+    return jsonify({
+        "status": "ok", "username": u, "rank": rank, "total": total,
+        "balance": round(my_bal, 5),
+        "next": {"username": nxt["username"],
+                 "gap_nkl": round(nxt["balance"] - my_bal, 5)} if nxt else None
+    })
+
 @app.route("/stats/me")
 @require_api_key
 def my_stats():
@@ -1009,9 +1055,9 @@ def my_stats():
         (request.miner_username,)
     ).fetchone()
     s   = db.execute(
-        "SELECT COUNT(*) AS n, MAX(submitted_at) AS last"
-        " FROM shares WHERE username=?",
-        (request.miner_username,)
+        "SELECT (SELECT total_shares_lifetime FROM miners WHERE username=?) AS n,"
+        " MAX(submitted_at) AS last FROM shares WHERE username=?",
+        (request.miner_username, request.miner_username)
     ).fetchone()
     return jsonify({
         "status":     "ok",
@@ -1496,7 +1542,9 @@ def explorer_search_date():
 @app.route("/dashboard")
 def dashboard():        return send_file("dashboard.html")
 @app.route("/explorer")
-def explorer_page():    return send_file("explorer.html")
+def explorer_page():
+    from explorer_ssr_patch import render_explorer_ssr
+    return render_explorer_ssr()
 @app.route("/withdrawals")
 def withdrawals_page(): return send_file("withdrawals.html")
 @app.route("/static/<path:filename>")
@@ -1652,3 +1700,6 @@ def cert_anchor_get(tx_id):
     finally:
         conn.close()
 
+
+from api_public import register as _api_register
+_api_register(app, DB_PATH)
