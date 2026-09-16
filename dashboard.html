@@ -163,7 +163,9 @@ footer span{font-family:var(--mono);font-size:9px;color:#a0c0d5;letter-spacing:1
   <div class="hdr-right">
     <div class="pill pill-green"><div class="dot dot-green"></div>ONLINE</div>
     <div class="pill pill-blue" id="era-pill">ERA 0</div>
-    <button class="refresh-btn" onclick="loadAll()">REFRESH</button>
+    <a href="/explorer" class="refresh-btn" style="text-decoration:none;display:inline-flex;align-items:center">EXPLORER</a>
+      <a href="https://pool.nucleonkl.com/withdrawals" class="refresh-btn" style="text-decoration:none;display:inline-flex;align-items:center">RETIROS</a>
+      <button class="refresh-btn" onclick="loadAll()">REFRESH</button>
     <button class="login-btn"  id="hdr-login-btn"  onclick="scrollToLogin()" style="display:none">MI CUENTA</button>
     <button class="logout-btn" id="hdr-logout-btn" onclick="doLogout()"      style="display:none">SALIR</button>
   </div>

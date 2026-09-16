@@ -10,7 +10,7 @@
 :root{
   --bg:#04080c;--s1:#080f16;--s2:#0c1620;--border:#132030;--b2:#1c3048;
   --accent:#e8f400;--cyan:#00cfff;--orange:#ff6b00;--green:#00e87a;--red:#ff3d5a;
-  --text:#b8d0e0;--muted:#3a5570;
+  --text:#ffffff;--muted:#ffffff;
   --mono:'IBM Plex Mono',monospace;--display:'Barlow Condensed',sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -120,6 +120,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:24p
   .ht-head,.ht-row{grid-template-columns:40px 1fr 90px 70px}
   .ht-head span:last-child,.ht-cancel{display:none}
 }
+.coming-soon-banner{background:rgba(255,61,90,.08);border:1px solid rgba(255,61,90,.35);border-radius:6px;padding:14px 18px;margin:20px 0;font-family:var(--display);font-size:16px;font-weight:700;letter-spacing:1px;color:var(--red);text-align:center;text-transform:uppercase}
 </style>
 </head>
 <body>
@@ -139,6 +140,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:24p
     <a href="/withdrawals" class="hdr-link active">Retiros</a>
   </div>
 </header>
+<div class="coming-soon-banner">⚠ PRÓXIMAMENTE<br><span style="font-size:11px;font-weight:400;text-transform:none;letter-spacing:.5px">Los retiros en NKL nativo aún no están habilitados</span></div>
 
 <!-- LOGIN -->
 <div id="login-panel">
@@ -240,6 +242,46 @@ header{display:flex;align-items:center;justify-content:space-between;padding:24p
     </button>
   </div>
 
+
+    <!-- ENVIAR ENTRE USUARIOS -->
+    <div class="withdraw-form" style="margin-top:24px">
+      <div class="wf-title">Enviar NKL a otro usuario</div>
+      <div class="wf-sub">Entre usuarios de NKL &bull; Sin comision &bull; Minimo 1,000 NKL</div>
+
+      <div class="notice">
+        <strong>Importante:</strong><br>
+        Esto es una transferencia interna dentro del pool, entre cuentas de NKL. No es un retiro y no usa ninguna red externa (BNB, Ethereum, etc.) &mdash; el saldo se mueve al instante entre los dos usuarios.
+      </div>
+
+      <div class="wf-row">
+        <div class="field">
+          <label>Usuario destino</label>
+          <input id="t-user" type="text" placeholder="nombre de usuario">
+        </div>
+        <div class="field">
+          <label>Monto a enviar (NKL)</label>
+          <input id="t-amount" type="number" min="1000" step="1" placeholder="ej: 5000">
+        </div>
+      </div>
+
+      <div class="fee-preview" id="t-confirm" style="display:none">
+        <div class="fp-row"><span>Vas a enviar:</span><span class="fp-net" id="t-confirm-amount">-</span></div>
+        <div class="fp-row"><span>A usuario:</span><span id="t-confirm-user" style="color:var(--cyan)">-</span></div>
+      </div>
+
+      <button class="btn-primary" style="margin-top:16px" onclick="doTransfer()" id="t-btn">
+        VERIFICAR Y ENVIAR
+      </button>
+    </div>
+
+    <!-- HISTORIAL DE ENVIOS -->
+    <div class="sec"><span class="sec-title">Historial de Envios</span><div class="sec-line"></div></div>
+    <div class="hist-wrap">
+      <div class="ht-head">
+        <span>ID</span><span>USUARIO</span><span>MONTO</span><span>TIPO</span><span>FECHA</span>
+      </div>
+      <div id="transfer-hist-body"></div>
+    </div>
   <!-- HISTORIAL -->
   <div class="sec"><span class="sec-title">Historial de Retiros</span><div class="sec-line"></div></div>
   <div class="hist-wrap">
@@ -327,6 +369,7 @@ function showMain(d){
   document.getElementById('bc-username').textContent=SESSION.username;
   updateBalance(d.balance);
   loadHistory();
+  loadTransferHistory();
 }
 
 function updateBalance(bal){
@@ -341,6 +384,94 @@ async function refreshBalance(){
   }catch(e){}
 }
 
+
+// -- ENVIO ENTRE USUARIOS --
+let transferVerified=null;
+
+async function doTransfer(){
+  hideAlerts();
+  const toUser=document.getElementById('t-user').value.trim();
+  const amount=parseFloat(document.getElementById('t-amount').value);
+
+  if(!toUser){showAlert('alert-err','Indica el usuario destino');return}
+  if(!amount||amount<1000){showAlert('alert-err','Minimo 1,000 NKL para enviar');return}
+
+  if(!transferVerified||transferVerified.user!==toUser||transferVerified.amount!==amount){
+    try{
+      const r=await fetch('/transfer/check/'+encodeURIComponent(toUser),{
+        headers:{'X-API-Key':SESSION.apiKey}
+      });
+      const d=await r.json();
+      if(d.status!=='ok'){
+        showAlert('alert-err',d.message||'Usuario no encontrado');
+        return;
+      }
+      transferVerified={user:toUser,amount:amount};
+      document.getElementById('t-confirm-amount').textContent=amount.toLocaleString()+' NKL';
+      document.getElementById('t-confirm-user').textContent=d.username;
+      document.getElementById('t-confirm').style.display='block';
+      document.getElementById('t-btn').textContent='CONFIRMAR ENVIO';
+      return;
+    }catch(e){showAlert('alert-err','Error de conexion');return}
+  }
+
+  try{
+    const r=await fetch('/transfer/send',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-API-Key':SESSION.apiKey},
+      body:JSON.stringify({to_user:toUser,amount:amount})
+    });
+    const d=await r.json();
+    if(d.status==='ok'){
+      showAlert('alert-ok','Enviado correctamente a '+d.to_user+': '+Number(d.amount_nkl).toLocaleString()+' NKL');
+      document.getElementById('t-user').value='';
+      document.getElementById('t-amount').value='';
+      document.getElementById('t-confirm').style.display='none';
+      document.getElementById('t-btn').textContent='VERIFICAR Y ENVIAR';
+      transferVerified=null;
+      refreshBalance();
+      loadTransferHistory();
+    } else {
+      showAlert('alert-err',d.message||'Error al enviar');
+      transferVerified=null;
+      document.getElementById('t-btn').textContent='VERIFICAR Y ENVIAR';
+    }
+  }catch(e){showAlert('alert-err','Error de conexion')}
+}
+
+async function loadTransferHistory(){
+  const body=document.getElementById('transfer-hist-body');
+  try{
+    const d=await fetch('/transfer/history',{
+      headers:{'X-API-Key':SESSION.apiKey}
+    }).then(r=>r.json());
+
+    if(!d.transfers||!d.transfers.length){
+      body.innerHTML='<div class="empty">SIN ENVIOS REGISTRADOS</div>';
+      return;
+    }
+
+    body.innerHTML=d.transfers.map(function(t){
+      const isSent=t.direction==='sent';
+      const other=isSent?t.to_user:t.from_user;
+      const label=isSent?'ENVIADO A':'RECIBIDO DE';
+      const color=isSent?'var(--red)':'var(--green)';
+      const sign=isSent?'-':'+';
+      const amt=Number(t.amount_nkl).toLocaleString(undefined,{minimumFractionDigits:2});
+      let html='<div class="ht-row">';
+      html+='<div class="ht-id">#'+t.id+'</div>';
+      html+='<div class="ht-info">';
+      html+='<div class="ht-wallet">'+other+'</div>';
+      html+='<div class="ht-network">'+fmtDate(t.created_at)+'</div>';
+      html+='</div>';
+      html+='<div class="ht-amount" style="color:'+color+'">'+sign+amt+' NKL</div>';
+      html+='<div><span class="badge" style="color:'+color+';border-color:'+color+'">'+label+'</span></div>';
+      html+='<div></div>';
+      html+='</div>';
+      return html;
+    }).join('');
+  }catch(e){body.innerHTML='<div class="empty">ERROR AL CARGAR</div>'}
+}
 // ── RETIRO ──
 async function doWithdraw(){
   hideAlerts();

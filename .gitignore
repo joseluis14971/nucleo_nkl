@@ -21,3 +21,6 @@ yntax is ok
 explorer_limpio.html
 explorer_preview.html
 explorer_ssr_patch.py
+server.py
+server_backup_*.py
+server_pre_*.py
