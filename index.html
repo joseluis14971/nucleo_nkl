@@ -155,6 +155,10 @@ code.inline{color:var(--teal);background:#1a2e45;padding:2px 7px;border-radius:4
 .dl-box h2{font-size:clamp(1.7rem,3.5vw,2.2rem);font-weight:800;margin-bottom:12px;}
 .dl-box p{color:var(--muted);font-size:.95rem;max-width:500px;margin:0 auto 32px;}
 .btn-dl{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--teal),#00a87e);color:#000;padding:18px 44px;border-radius:12px;font-weight:800;font-size:1.1rem;transition:.2s;}
+    .dl-btn-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.dl-btn-row .btn-dl{padding:18px 32px;}
+.btn-dl-alt{background:linear-gradient(135deg,#2d2d2d,#111);color:#fff;}
+.btn-dl-alt:hover{transform:translateY(-3px);box-shadow:0 12px 44px #00000060;}
 .btn-dl:hover{transform:translateY(-3px);box-shadow:0 12px 44px #00c8a048;}
 .dl-note{margin-top:16px;font-size:.8rem;color:var(--muted);}
 
@@ -502,16 +506,22 @@ footer .sep{margin:0 8px;}
           </table>
           <div class="compat-note">También compatible con Raspberry Pi, Orange Pi, NUC y máquinas virtuales</div>
         </div>
-        <div class="dl-box">
-          <h2>Ya podes descargar el Minero de Prueba</h2>
-          <p>Sé de los primeros en minar NKL desde el lanzamiento oficial de la red.</p>
-          <a href="NUCLEO_NKL_MINER/NUCLEO_NKL_MINER.zip" class="btn-dl">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            DESCARGAR MINERO
-          </a>
-          <div class="dl-note">Archivo ZIP · Windows 64-bit · v2.7</div>
-        </div>
-      </div>
+       <div class="dl-box">
+  <h2>Ya podes descargar el Minero de Prueba</h2>
+  <p>Sé de los primeros en minar NKL desde el lanzamiento oficial de la red.</p>
+  <div class="dl-btn-row">
+    <a href="NUCLEO_NKL_MINER/NUCLEO_NKL_MINER.zip" class="btn-dl">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Windows
+    </a>
+    <a href="NUCLEO_NKL_MINER/NUCLEO_NKL_MINER_LINUX.zip" class="btn-dl btn-dl-alt">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Linux
+    </a>
+  </div>
+  <div class="dl-note">Windows 64-bit · Linux 64-bit (glibc 2.14+) · v2.7</div>
+</div> 
+        
     </div>
   </div>
 </section>
