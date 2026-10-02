@@ -1,0 +1,16 @@
+name: build-macos
+on: workflow_dispatch
+jobs:
+  mac:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - run: pip install pyinstaller requests
+      - run: pyinstaller --onefile --name NucleoNKL_Miner_macOS NUCLEO_NKL_MINER/miner_v2_7_1.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NucleoNKL_Miner_macOS
+          path: dist/NucleoNKL_Miner_macOS
